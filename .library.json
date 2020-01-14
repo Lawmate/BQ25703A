@@ -1,10 +1,10 @@
 {
-    "name": "Lorro BQ4050",
-    "version": "0.2",
+    "name": "Lorro BQ25703A",
+    "version": "0.1",
     "keywords": [
         "communication"
     ],
-    "description": "Arduino library for BQ4050 battery fuel gauge, using SMBUS communication which is based on I2C",
+    "description": "Arduino library for BQ25703A battery fuel gauge, using SMBUS communication which is based on I2C",
     "frameworks": [
         "arduino"
     ],
@@ -21,7 +21,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/Lawmate/BQ4050"
+        "url": "https://github.com/Lawmate/BQ25703A"
     },
     "homepage": null,
     "export": {
