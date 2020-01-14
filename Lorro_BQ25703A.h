@@ -87,6 +87,60 @@ class Lorro_BQ25703A{
     }
 
   }
+  struct BitMaskt{
+    struct ChargerOptByte0Hight{
+      struct EN_LWPWRt{ //enable low power mode. Default is enabled
+        byte val = 0x01;
+        byte mask = 0x7F; //bit 7
+      } eN_LWPWR;
+      struct WDTMR_ADJt{ //Watchdog timer. Default is 175sec between commands (0x03)
+        byte val = 0x00;
+        byte mask = 0x9F; //bit 6 & 5
+      } wDTMR_ADJ;
+      struct IDPM_AUTO_DISABLEt{ //Disable IDPM. Default is low (IDPM enabled)
+        byte val = 0x00;
+        byte mask = 0xEF; //bit 4
+      } iDPM_AUTO_DISABLE;
+      struct OTG_ON_CHRGOKt{ //Turn Chrgok on if OTG is enabled. Default is low
+        byte val = 0x00;
+        byte mask = 0xF7; //bit 3
+      } oTG_ON_CHRGOK;
+      struct EN_OOAt{ //Out of audio switch frequency. Default is low(disabled)
+        byte val = 0x00;
+        byte mask = 0xFA; //bit 2
+      } eN_OOA;
+      struct PWM_FREQt{ //PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
+        byte val = 0x01;
+        byte mask = 0xFD; //bit 1
+      } pWM_FREQ;
+    } chargerOptByte0Hight;
+    struct ChargerOptByte0Lowt{
+      struct EN_LEARNt{ //Learn mode. Discharges with power connected. Default disabled
+        byte val = 0x00;
+        byte mask = 0xDF; //bit 5
+      } eN_LEARN;
+      struct IADPT_GAINt{ //Current shunt amplifier 20x or 40x. Default is 20x
+        byte val = 0x00;
+        byte mask = 0xEF; //bit 4
+      } iADPT_GAIN;
+      struct IBAT_GAINt{ //Bat current shunt amplifier 8x or 16x. Default is 16x
+        byte val = 0x01;
+        byte mask = 0xF7; //bit 3
+      } iBAT_GAIN;
+      struct EN_LDOt{ //LDO mode - use of pre charge. Default is precharge enabled
+        byte val = 0x01;
+        byte mask = 0xFA; //bit 2
+      } eN_LDO;
+      struct EN_IDPMt{ //Enable IDPM current control. Default is high(enabled)
+        byte val = 0x00;
+        byte mask = 0xFD; //bit 1
+      } eN_IDPM;
+      struct CHRG_INHIBITt{ //Inhibit charging. Default is low(enabled)
+        byte val = 0x00;
+        byte mask = 0xFE; //bit 0
+      } cHRG_INHIBIT;
+    } chargerOptByte0Lowt;
+  } ;
   struct Regt{
       struct ChargeOption0t{
         uint16_t val = 0x1A34;
