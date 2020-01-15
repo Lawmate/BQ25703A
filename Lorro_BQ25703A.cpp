@@ -16,6 +16,8 @@ A library for interfacing with TI BQ4050 battery fuel gauge chip
 // Prints a binary number with leading zeros (Automatic Handling)
 #define PRINTBIN(Num) for (uint32_t t = (1UL<< ((sizeof(Num)*8)-1)); t; t >>= 1) Serial.write(Num  & t ? '1' : '0');
 
+Lorro_BQ25703A::BitMaskt bitMask;
+
 
 Lorro_BQ25703A::Lorro_BQ25703A( char addr ){
 // Arduino_BQ4050::Arduino_BQ4050(  ){
@@ -125,16 +127,16 @@ float Lorro_BQ25703A::getCMPIN(){
 }
 
 void Lorro_BQ25703A::getManuID(){
-  byte manID = readByteReg( BQ25703Aaddr, manufacturerID );
-  Serial.print("Manufacturer ID:\t");
-  Serial.println( manID );
+  // byte manID = readByteReg( BQ25703Aaddr, manufacturerID );
+  // Serial.print("Manufacturer ID:\t");
+  // Serial.println( manID );
   // printByteVal( manID );
 }
 
 void Lorro_BQ25703A::getDevID(){
-  byte devID = readByteReg( BQ25703Aaddr, deviceID );
-  Serial.print("Device ID:\t\t");
-  Serial.println( devID );
+  // byte devID = readByteReg( BQ25703Aaddr, deviceID );
+  // Serial.print("Device ID:\t\t");
+  // Serial.println( devID );
   // printByteVal( devID );
 }
 
@@ -402,4 +404,8 @@ void Lorro_BQ25703A::write2ByteReg( byte devAddress, byte regAddress, byte dataB
   Wire.write( dataByte2 );
   Wire.endTransmission();
 
+}
+
+boolean Lorro_BQ25703A::readDataReg( char devAddress, byte regAddress, byte *dataVal, uint8_t arrLen ){
+  return true;
 }

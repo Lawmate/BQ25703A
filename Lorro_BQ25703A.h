@@ -22,8 +22,8 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 #define adcCMPIN    													0x2A
 #define chargerStatus1 												0x21
 #define chargerStatus2                        0x20
-#define manufacturerID                        0x2E
-#define deviceID 														  0x2D
+// #define manufacturerID                        0x2E
+// #define deviceID 														  0x2D
 #define ADCOptions  													0x3B
 #define ADCEns                                0x3A
 #define SysVolt 														  0x0D
@@ -75,7 +75,7 @@ class Lorro_BQ25703A{
     //Create an array to hold the returned data
     byte valBytes[ byteLen ];
     //Function to handle the I2C comms.
-    if( readDataReg( BQ4050addr, ( byte )dataParam.addr, valBytes, byteLen ) ){
+    if( readDataReg( BQ25703Aaddr, ( byte )dataParam.addr, valBytes, byteLen ) ){
       //Cycle through array of data
       for( int i = 0; i < byteLen; i++ ){
         //Shift each byte in to the right, in steps of 8 bits. The resulting data is type cast, by getting the type with decltype
@@ -89,30 +89,57 @@ class Lorro_BQ25703A{
   }
   struct BitMaskt{
     struct ChargerOptByte0Hight{
-      struct EN_LWPWRt{ //enable low power mode. Default is enabled
-        byte val = 0x01;
-        byte mask = 0x7F; //bit 7
-      } eN_LWPWR;
-      struct WDTMR_ADJt{ //Watchdog timer. Default is 175sec between commands (0x03)
-        byte val = 0x00;
-        byte mask = 0x9F; //bit 6 & 5
-      } wDTMR_ADJ;
-      struct IDPM_AUTO_DISABLEt{ //Disable IDPM. Default is low (IDPM enabled)
-        byte val = 0x00;
-        byte mask = 0xEF; //bit 4
-      } iDPM_AUTO_DISABLE;
-      struct OTG_ON_CHRGOKt{ //Turn Chrgok on if OTG is enabled. Default is low
-        byte val = 0x00;
-        byte mask = 0xF7; //bit 3
-      } oTG_ON_CHRGOK;
-      struct EN_OOAt{ //Out of audio switch frequency. Default is low(disabled)
-        byte val = 0x00;
-        byte mask = 0xFA; //bit 2
-      } eN_OOA;
-      struct PWM_FREQt{ //PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
-        byte val = 0x01;
-        byte mask = 0xFD; //bit 1
-      } pWM_FREQ;
+      byte vals[12] = {  0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+      byte masks[12] = {  0x7FFF, //byte 1, bit 7
+                          0x9FFF, //byte 1, bit 6 & 5
+                          0xEFFF, //byte 1, bit 4
+                          0xF7FF, //byte 1, bit 3
+                          0xFAFF, //byte 1, bit 2
+                          0xFDFF, //byte 1, bit 1
+                          0xFFDF, //byte 1, bit 5
+                          0xFFEF, //byte 1, bit 4
+                          0xFFF7, //byte 1, bit 3
+                          0xFFFB, //byte 1, bit 2
+                          0xFFFD, //byte 1, bit 1
+                          0xFFFE, //byte 1, bit 0
+                      };
+      byte shift[6] = { 0x07, 0x06, 0x04, 0x03, 0x02, 0x01 };
+      void EN_LWPWR( byte thisVal ){ vals[ 0 ] = thisVal; } //enable low power mode. Default is enabled
+      void WDTMR_ADJ( byte thisVal ){ vals[ 1 ] = thisVal; } //Watchdog timer. Default is 175sec between commands (0x03)
+      void IDPM_AUTO_DISABLE( byte thisVal ){ vals[ 2 ] = thisVal; } //Disable IDPM. Default is low (IDPM enabled)
+      void OTG_ON_CHRGOK( byte thisVal ){ vals[ 3 ] = thisVal; } //Turn Chrgok on if OTG is enabled. Default is low
+      void EN_OOA( byte thisVal ){ vals[ 4 ] = thisVal; } //Out of audio switch frequency. Default is low(disabled)
+      void PWM_FREQ( byte thisVal ){ vals[ 5 ] = thisVal; } //PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
+      // struct EN_LWPWRt{ //enable low power mode. Default is enabled
+      //   byte val = 0x01;
+      //   byte mask = 0x7F; //bit 7
+      //   byte shift = 7;
+      // } eN_LWPWR;
+      // struct WDTMR_ADJt{ //Watchdog timer. Default is 175sec between commands (0x03)
+      //   byte val = 0x00;
+      //   byte mask = 0x9F; //bit 6 & 5
+      //   byte shift = 6;
+      // } wDTMR_ADJ;
+      // struct IDPM_AUTO_DISABLEt{ //Disable IDPM. Default is low (IDPM enabled)
+      //   byte val = 0x00;
+      //   byte mask = 0xEF; //bit 4
+      //   byte shift = 4;
+      // } iDPM_AUTO_DISABLE;
+      // struct OTG_ON_CHRGOKt{ //Turn Chrgok on if OTG is enabled. Default is low
+      //   byte val = 0x00;
+      //   byte mask = 0xF7; //bit 3
+      //   byte shift = 3;
+      // } oTG_ON_CHRGOK;
+      // struct EN_OOAt{ //Out of audio switch frequency. Default is low(disabled)
+      //   byte val = 0x00;
+      //   byte mask = 0xFA; //bit 2
+      //   byte shift = 2;
+      // } eN_OOA;
+      // struct PWM_FREQt{ //PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
+      //   byte val = 0x01;
+      //   byte mask = 0xFD; //bit 1
+      //   byte shift = 1;
+      // } pWM_FREQ;
     } chargerOptByte0Hight;
     struct ChargerOptByte0Lowt{
       struct EN_LEARNt{ //Learn mode. Discharges with power connected. Default disabled
@@ -143,7 +170,7 @@ class Lorro_BQ25703A{
   } ;
   struct Regt{
       struct ChargeOption0t{
-        uint16_t val = 0x1A34;
+        byte val[ 2 ] = { 0x1A, 0x34 };
         uint8_t addr = 0x00;
       } chargeOption0;
       struct ChargeCurrentt{
@@ -244,5 +271,6 @@ class Lorro_BQ25703A{
 	uint16_t readBlockReg( char devAddress, byte regAddress, byte *block );
 	void writeByteReg( byte devAddress, byte regAddress, byte dataByte );
 	void write2ByteReg( byte devAddress, byte regAddress, byte dataByte1, byte dataByte2 );
+  boolean readDataReg( char devAddress, byte regAddress, byte *dataVal, uint8_t arrLen );
 
 };
