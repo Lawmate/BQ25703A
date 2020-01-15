@@ -89,27 +89,45 @@ class Lorro_BQ25703A{
   }
   struct BitMaskt{
     struct ChargerOptByte0Hight{
-      byte vals[12] = {  0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-      byte masks[12] = {  0x7FFF, //byte 1, bit 7
-                          0x9FFF, //byte 1, bit 6 & 5
-                          0xEFFF, //byte 1, bit 4
-                          0xF7FF, //byte 1, bit 3
-                          0xFAFF, //byte 1, bit 2
-                          0xFDFF, //byte 1, bit 1
-                          0xFFDF, //byte 1, bit 5
-                          0xFFEF, //byte 1, bit 4
-                          0xFFF7, //byte 1, bit 3
-                          0xFFFB, //byte 1, bit 2
-                          0xFFFD, //byte 1, bit 1
-                          0xFFFE, //byte 1, bit 0
-                      };
-      byte shift[6] = { 0x07, 0x06, 0x04, 0x03, 0x02, 0x01 };
-      void EN_LWPWR( byte thisVal ){ vals[ 0 ] = thisVal; } //enable low power mode. Default is enabled
-      void WDTMR_ADJ( byte thisVal ){ vals[ 1 ] = thisVal; } //Watchdog timer. Default is 175sec between commands (0x03)
-      void IDPM_AUTO_DISABLE( byte thisVal ){ vals[ 2 ] = thisVal; } //Disable IDPM. Default is low (IDPM enabled)
-      void OTG_ON_CHRGOK( byte thisVal ){ vals[ 3 ] = thisVal; } //Turn Chrgok on if OTG is enabled. Default is low
-      void EN_OOA( byte thisVal ){ vals[ 4 ] = thisVal; } //Out of audio switch frequency. Default is low(disabled)
-      void PWM_FREQ( byte thisVal ){ vals[ 5 ] = thisVal; } //PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
+      // byte bitVals[12] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01 };
+      // uint16_t masks[12] = {  0xDFFF, //byte 2, bit 5
+      //                     0xEFFF, //byte 2, bit 4
+      //                     0xF7FF, //byte 2, bit 3
+      //                     0xFBFF, //byte 2, bit 2
+      //                     0xFDFF, //byte 2, bit 1
+      //                     0xFEFF, //byte 2, bit 0
+      //                     0xFF7F, //byte 1, bit 7
+      //                     0xFF9F, //byte 1, bit 6 & 5
+      //                     0xFFEF, //byte 1, bit 4
+      //                     0xFFF7, //byte 1, bit 3
+      //                     0xFFFA, //byte 1, bit 2
+      //                     0xFFFD, //byte 1, bit 1
+      //                 };
+      // byte shift[6] = { 0x05, 0x04, 0x03, 0x02, 0x01, 0x00, 0x07, 0x06, 0x04, 0x03, 0x02, 0x01 };
+      // //Learn mode. Discharges with power connected. Default disabled
+      // void EN_LEARN( byte thisVal ){ bitVals[ 0 ] = thisVal; }
+      // //Current shunt amplifier 20x or 40x. Default is 20x
+      // void IADPT_GAIN( byte thisVal ){ bitVals[ 1 ] = thisVal; }
+      // //Bat current shunt amplifier 8x or 16x. Default is 16x
+      // void IBAT_GAIN( byte thisVal ){ bitVals[ 2 ] = thisVal; }
+      // //LDO mode - use of pre charge. Default is precharge enabled
+      // void EN_LDO( byte thisVal ){ bitVals[ 3 ] = thisVal; }
+      // //Enable IDPM current control. Default is high(enabled)
+      // void EN_IDPM( byte thisVal ){ bitVals[ 4 ] = thisVal; }
+      // //Inhibit charging. Default is low(enabled)
+      // void CHRG_INHIBIT( byte thisVal ){ bitVals[ 5 ] = thisVal; }
+      // //enable low power mode. Default is enabled
+      // void EN_LWPWR( byte thisVal ){ bitVals[ 6 ] = thisVal; }
+      // //Watchdog timer. Default is 175sec between commands (0x03)
+      // void WDTMR_ADJ( byte thisVal ){ bitVals[ 7 ] = thisVal; }
+      // //Disable IDPM. Default is low (IDPM enabled)
+      // void IDPM_AUTO_DISABLE( byte thisVal ){ bitVals[ 8 ] = thisVal; }
+      // //Turn Chrgok on if OTG is enabled. Default is low
+      // void OTG_ON_CHRGOK( byte thisVal ){ bitVals[ 9 ] = thisVal; }
+      // //Out of audio switch frequency. Default is low(disabled)
+      // void EN_OOA( byte thisVal ){ bitVals[ 10 ] = thisVal; }
+      // //PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
+      // void PWM_FREQ( byte thisVal ){ bitVals[ 11 ] = thisVal; }
       // struct EN_LWPWRt{ //enable low power mode. Default is enabled
       //   byte val = 0x01;
       //   byte mask = 0x7F; //bit 7
@@ -170,24 +188,207 @@ class Lorro_BQ25703A{
   } ;
   struct Regt{
       struct ChargeOption0t{
+        byte bitVals[12] = { 0x00, 0x00, 0x01, 0x01, 0x01, 0x00, 0x01, 0x03, 0x00, 0x00, 0x00, 0x01 };
+        uint16_t masks[12] = {  0xDFFF, //byte 2, bit 5
+                                0xEFFF, //byte 2, bit 4
+                                0xF7FF, //byte 2, bit 3
+                                0xFBFF, //byte 2, bit 2
+                                0xFDFF, //byte 2, bit 1
+                                0xFEFF, //byte 2, bit 0
+                                0xFF7F, //byte 1, bit 7
+                                0xFF9F, //byte 1, bit 6 & 5
+                                0xFFEF, //byte 1, bit 4
+                                0xFFF7, //byte 1, bit 3
+                                0xFFFA, //byte 1, bit 2
+                                0xFFFD, //byte 1, bit 1
+                            };
+        byte shift[12] = { 0x0D, 0x0C, 0x0B, 0x0A, 0x09, 0x08, 0x07, 0x06, 0x04, 0x03, 0x02, 0x01 };
+        //Learn mode. Discharges with power connected. Default disabled
+        void EN_LEARN( byte thisVal ){ bitVals[ 0 ] = thisVal; }
+        //Current shunt amplifier 20x or 40x. Default is 20x
+        void IADPT_GAIN( byte thisVal ){ bitVals[ 1 ] = thisVal; }
+        //Bat current shunt amplifier 8x or 16x. Default is 16x
+        void IBAT_GAIN( byte thisVal ){ bitVals[ 2 ] = thisVal; }
+        //LDO mode - use of pre charge. Default is precharge enabled
+        void EN_LDO( byte thisVal ){ bitVals[ 3 ] = thisVal; }
+        //Enable IDPM current control. Default is high(enabled)
+        void EN_IDPM( byte thisVal ){ bitVals[ 4 ] = thisVal; }
+        //Inhibit charging. Default is low(enabled)
+        void CHRG_INHIBIT( byte thisVal ){ bitVals[ 5 ] = thisVal; }
+        //enable low power mode. Default is enabled
+        void EN_LWPWR( byte thisVal ){ bitVals[ 6 ] = thisVal; }
+        //Watchdog timer. Default is 175sec between commands (0x03)
+        void WDTMR_ADJ( byte thisVal ){ bitVals[ 7 ] = thisVal; }
+        //Disable IDPM. Default is low (IDPM enabled)
+        void IDPM_AUTO_DISABLE( byte thisVal ){ bitVals[ 8 ] = thisVal; }
+        //Turn Chrgok on if OTG is enabled. Default is low
+        void OTG_ON_CHRGOK( byte thisVal ){ bitVals[ 9 ] = thisVal; }
+        //Out of audio switch frequency. Default is low(disabled)
+        void EN_OOA( byte thisVal ){ bitVals[ 10 ] = thisVal; }
+        //PWM switching frequency, 800kHz or 1.2MHz. Default is high (800kHz)
+        void PWM_FREQ( byte thisVal ){ bitVals[ 11 ] = thisVal; }
         byte val[ 2 ] = { 0x1A, 0x34 };
         uint8_t addr = 0x00;
+        void update(){
+          uint16_t tempVar = 0;
+          //cycle through arrays
+          for( uint16_t i = 0; i < sizeof( shift ); i++ ){
+            //mask relevant bit(s) in question to 0
+            tempVar = ( tempVar & masks[i] );
+            //OR in the value, shifted to the correct position
+            tempVar = ( tempVar | ( uint16_t )( bitVals[ i ] << shift[ i ] ) );
+          }
+          val[ 0 ] = ( byte )( tempVar );
+          val[ 1 ] = ( byte )( tempVar >> 8 );
+        }
       } chargeOption0;
       struct ChargeCurrentt{
-        uint16_t val = 2048;
+        uint16_t current = 2048;
+        byte val[ 2 ] = { 0x00, 0x08 };
         uint8_t addr = 0x02;
+        void update(){
+          //catch out of bounds
+          if( current < 64 ) current = 64;
+          if( current > 8128 ) current = 8128;
+          //catch out of resolution
+          current = current / 64;
+          current = current * 64;
+          //extract bytes
+          val[ 0 ] = ( byte )( current );
+          val[ 1 ] = ( byte )( current >> 8 );
+        }
       } chargeCurrent;
       struct MaxChargeVoltaget{
-        uint16_t val = 16800;
+        uint16_t voltage = 16800;
+        byte val[ 2 ] = { 0xA0, 0x41 };
         uint8_t addr = 0x04;
+        void update(){
+          //catch out of bounds
+          if( voltage < 1024 ) voltage = 1024;
+          if( voltage > 19200 ) voltage = 19200;
+          //catch out of resolution
+          voltage = voltage / 16;
+          voltage = voltage * 16;
+          //extract bytes
+          val[ 0 ] = ( byte )( voltage );
+          val[ 1 ] = ( byte )( voltage >> 8 );
+        }
       } maxChargeVoltage;
       struct ChargeOption1t{
-        int16_t val = 0;
+        byte bitVals[12] = { 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01 };
+        uint16_t masks[12] = {  0x7FFF, //byte 2, bit 7
+                                0xBFFF, //byte 2, bit 6
+                                0xCFFF, //byte 2, bit 5 & 4
+                                0xF7FF, //byte 2, bit 3
+                                0xFDFF, //byte 2, bit 1
+                                0xFEFF, //byte 2, bit 0
+                                0xFF7F, //byte 1, bit 7
+                                0xFF9F, //byte 1, bit 6 & 5
+                                0xFFEF, //byte 1, bit 4
+                                0xFFF7, //byte 1, bit 3
+                                0xFFFB, //byte 1, bit 2
+                                0xFFFD, //byte 1, bit 1
+                            };
+        byte shift[12] = { 0x0F, 0x0E, 0x0D, 0x0B, 0x09, 0x08, 0x07, 0x06, 0x04, 0x03, 0x02, 0x01 };
+        //Internal comparator reference 2.3V or 1.2V. Default is 2.3V
+        void CMP_REF( byte thisVal ){ bitVals[ 0 ] = thisVal; }
+        //Internal comparator polarity
+        void CMP_POL( byte thisVal ){ bitVals[ 1 ] = thisVal; }
+        //Internal comparator deglitch time; off, 1us, 2ms, 5s. Default is 1us
+        void CMP_DEG( byte thisVal ){ bitVals[ 2 ] = thisVal; }
+        //Force power path to switch off. Default is disabled
+        void FORCE_LATCHOFF( byte thisVal ){ bitVals[ 3 ] = thisVal; }
+        //Discharge SRN ppin for shipping. Default is disabled
+        void EN_SHIP_DCHG( byte thisVal ){ bitVals[ 4 ] = thisVal; }
+        //Automatically charge for 30mins at 128mA if voltage is below min. Default enabled.
+        void AUTO_WAKEUP_EN( byte thisVal ){ bitVals[ 5 ] = thisVal; }
+        //Enable IBAT output buffer. Default is disabled
+        void EN_IBAT( byte thisVal ){ bitVals[ 6 ] = thisVal; }
+        //PROCHOT during battery only; disabled, IDCHG, VSYS. Default is disabled
+        void EN_PROCHOT_LPWR( byte thisVal ){ bitVals[ 7 ] = thisVal; }
+        //Disable IDPM. Default is low (IDPM enabled)
+        void EN_PSYS( byte thisVal ){ bitVals[ 8 ] = thisVal; }
+        //Charge sense resistor; 10mR or 20mR. Default is 10mR
+        void RSNS_RAC( byte thisVal ){ bitVals[ 9 ] = thisVal; }
+        //Input sense resistor; 10mR or 20mR. Default is 10mR
+        void RSNS_RSR( byte thisVal ){ bitVals[ 10 ] = thisVal; }
+        //PSYS gain; 0.25uA/W or 1uA/W. Default is 1uA/W
+        void PSYS_RATIO( byte thisVal ){ bitVals[ 11 ] = thisVal; }
+        byte val[ 2 ] = { 0x81, 0x11};
         uint8_t addr = 0x30;
+        void update(){
+          uint16_t tempVar = 0;
+          //cycle through arrays
+          for( uint16_t i = 0; i < sizeof( shift ); i++ ){
+            //mask relevant bit(s) in question to 0
+            tempVar = ( tempVar & masks[i] );
+            //OR in the value, shifted to the correct position
+            tempVar = ( tempVar | ( uint16_t )( bitVals[ i ] << shift[ i ] ) );
+          }
+          val[ 0 ] = ( byte )( tempVar );
+          val[ 1 ] = ( byte )( tempVar >> 8 );
+        }
       } chargeOption1;
       struct ChargeOption2t{
-        uint16_t val = 0;
+        byte bitVals[14] = { 0x01, 0x00, 0x01, 0x01, 0x00, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02 };
+        uint16_t masks[14] = {  0xFF7F, //byte LSB, bit 7
+                                0xFFBF, //byte LSB, bit 6
+                                0xFFDF, //byte LSB, bit 5
+                                0xFFEF, //byte LSB, bit 4
+                                0xFFF7, //byte LSB, bit 3
+                                0xFFFB, //byte LSB, bit 2
+                                0xFFFD, //byte LSB, bit 1
+                                0xFFFE, //byte LSB, bit 0
+                                0x3FFF, //byte MSB, bit 7 & 6
+                                0xDFFF, //byte MSB, bit 5
+                                0xEFFF, //byte MSB, bit 4
+                                0xF7FF, //byte MSB, bit 3
+                                0xFBFF, //byte MSB, bit 2
+                                0xFCFF, //byte MSB, bit 1 & 0
+                            };
+        byte shift[14] = { 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00, 0x0F, 0x0D, 0x0C, 0x0B, 0x0A, 0x09 };
+        //Allow ILIM_HIZ pin to set current limit. Default is enabled
+        void EN_EXTILIM( byte thisVal ){ bitVals[ 0 ] = thisVal; }
+        //Function of IBAT pin; discharge or charge. Default is discharge
+        void EN_ICHG_IDCHG( byte thisVal ){ bitVals[ 1 ] = thisVal; }
+        //Over Current Protection for Q2 by sensing VDS; 210mV or 150mV. Default is 150mV
+        void Q2_OCP( byte thisVal ){ bitVals[ 2 ] = thisVal; }
+        //Over Current Protection for input between ACP and ACN; 210mV or 150mV. default is 150mV
+        void ACX_OCP( byte thisVal ){ bitVals[ 3 ] = thisVal; }
+        //Input OCP enable. Default is disabled
+        void EN_ACOC( byte thisVal ){ bitVals[ 4 ] = thisVal; }
+        //Input OCP disabled current limit; 125% of ICRIT or 210% of ICRIT. Default is 210%
+        void ACOC_VTH( byte thisVal ){ bitVals[ 5 ] = thisVal; }
+        //Bat OCP; disabled or related to PROCHOT IDCHG. Default is IDPM
+        void EN_BATOC( byte thisVal ){ bitVals[ 6 ] = thisVal; }
+        //OCP related to PROCHOT IDCHG; 125% or 200%. Default is 200%
+        void BATOC_VTH( byte thisVal ){ bitVals[ 7 ] = thisVal; }
+        //Input overload time; 1ms, 2mS, 10mS, 20mS. Default is 1mS
+        void PKPWR_TOVLD_DEG( byte thisVal ){ bitVals[ 8 ] = thisVal; }
+        //Enable peak power mode from over current. Default is disabled
+        void EN_PKPWR_IDPM( byte thisVal ){ bitVals[ 9 ] = thisVal; }
+        //Enable peak power mode from under voltage. Default is disabled
+        void EN_PKPWR_VSYS( byte thisVal ){ bitVals[ 10 ] = thisVal; }
+        //Indicator that device is in overloading cycle. Default disabled
+        void PKPWR_OVLD_STAT( byte thisVal ){ bitVals[ 11 ] = thisVal; }
+        //Indicator that device is in relaxation cycle. Default disabled
+        void PKPWR_RELAX_STAT( byte thisVal ){ bitVals[ 12 ] = thisVal; }
+        //Peak power mode overload and relax cycle times; 5mS, 10mS, 20mS, 40mS. Default is 20mS
+        void PKPWR_TMAX( byte thisVal ){ bitVals[ 13 ] = thisVal; }
+        byte val[ 2 ] = { 0xB7, 0x02};
         uint8_t addr = 0x32;
+        void update(){
+          uint16_t tempVar = 0;
+          //cycle through arrays
+          for( uint16_t i = 0; i < sizeof( shift ); i++ ){
+            //mask relevant bit(s) in question to 0
+            tempVar = ( tempVar & masks[i] );
+            //OR in the value, shifted to the correct position
+            tempVar = ( tempVar | ( uint16_t )( bitVals[ i ] << shift[ i ] ) );
+          }
+          val[ 0 ] = ( byte )( tempVar );
+          val[ 1 ] = ( byte )( tempVar >> 8 );
+        }
       } chargeOption2;
       struct ChargeOption3t{
         uint16_t val = 0;
