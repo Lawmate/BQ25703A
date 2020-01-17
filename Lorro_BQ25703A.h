@@ -87,6 +87,19 @@ class Lorro_BQ25703A{
     }
 
   }
+  //macro to generate bit mask to access bits
+  #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
+  //macro to read bits from variable, using mask
+  #define READFROM(data, index, size) (((data) & GETMASK((index), (size))) >> (index))
+  //macro to write bits into variable, using mask
+  #define WRITETO(data, index, size, value) ((data) = ((data) & (~GETMASK((index), (size)))) | ((value) << (index)))
+  //macro to wrap functions for easy access
+  //if name is called with empty brackets, read bits and return value
+  //if name is prefixed with set_, write value in brackets into bits defined in FIELD
+  #define FIELD(data, name, index, size) \
+  inline decltype(data) name() { return READFROM(data, index, size); } \
+  inline void set_##name(decltype(data) value) { WRITETO(data, index, size, value); }
+
   struct BitMaskt{
     struct ChargerOptByte0Hight{
       // byte bitVals[12] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x01 };
@@ -471,7 +484,7 @@ class Lorro_BQ25703A{
         }
       } prochotOption0;
       struct ProchotOption1t{
-        byte bitVals[9] = { 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x01 };
+        byte bitVals[9] = { 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x40, 0x01 };
         uint16_t masks[9] = {   0xFFBF, //byte LSB, bit 6
                                 0xFFDF, //byte LSB, bit 5
                                 0xFFEF, //byte LSB, bit 4
@@ -501,7 +514,7 @@ class Lorro_BQ25703A{
         void IDCHG_VTH( byte thisVal ){ bitVals[ 7 ] = thisVal; }
         //IDCHG deglitch time; 1.6ms, 100us, 6ms, 12ms. Default is 100us.
         void IDCHG_DEG( byte thisVal ){ bitVals[ 8 ] = thisVal; }
-        byte val[ 2 ] = { 0x50, 0x92};
+        byte val[ 2 ] = { 0x20, 0x41};
         uint8_t addr = 0x38;
         void update(){
           uint16_t tempVar = 0;
@@ -517,12 +530,62 @@ class Lorro_BQ25703A{
         }
       } prochotOption1;
       struct ADCOptiont{
-        uint16_t val = 0;
         uint8_t addr = 0x3A;
+        byte val0, val1;
+        //Enable comparator voltage reading. Default is disabled.
+        FIELD( val0, EN_ADC_CMPIN, 0x07, 0x01 )
+        //Enable VBUS voltage reading. Default is disabled.
+        FIELD( val0, EN_ADC_VBUS, 0x06, 0x01 )
+        //Enable PSYS voltage reading for calculating system power. Default is disabled.
+        FIELD( val0, EN_ADC_PSYS, 0x05, 0x01 )
+        //Enable Current In current reading. Default is disabled.
+        FIELD( val0, EN_ADC_IIN, 0x04, 0x01 )
+        //Enable battery Current Discharge current reading. Default is disabled.
+        FIELD( val0, EN_ADC_IDCHG, 0x03, 0x01 )
+        //Enable battery Current Charge current reading. Default is disabled.
+        FIELD( val0, EN_ADC_ICHG, 0x02, 0x01 )
+        //Enable Voltage of System voltage reading. Default is disabled.
+        FIELD( val0, EN_ADC_VSYS, 0x01, 0x01 )
+        //Enable Voltage of Battery voltage reading. Default is disabled.
+        FIELD( val0, EN_ADC_VBAT, 0x00, 0x01 )
+        //ADC mode; one shot reading or continuous. Default is one shot
+        FIELD( val1, ADC_CONV, 0x07, 0x01 )
+        //Start a one shot reading of the ADC. Resets to 0 after reading
+        FIELD( val1, ADC_START, 0x06, 0x01 )
+        //ADC scale; 2.04V or 3.06V. Default is 3.06V
+        FIELD( val1, ADC_FULLSCALE, 0x05, 0x01 )
       } aDCOption;
       struct ChargerStatust{
-        uint16_t val = 0;
         uint8_t addr = 0x20;
+        byte val0, val1;
+        //Latched fault flag of adapter over voltage. Default is no fault.
+        FIELD( val0, Fault_ACOV, 0x07, 0x01 )
+        //Latched fault flag of battery over current. Default is no fault.
+        FIELD( val0, Fault_BATOC, 0x06, 0x01 )
+        //Latched fault flag of adapter over current. Default is no fault.
+        FIELD( val0, Fault_ACOC, 0x05, 0x01 )
+        //Latched fault flag of system over voltage protection. Default is no fault.
+        FIELD( val0, SYSOVP_STAT, 0x04, 0x01 )
+        //Resets faults latch. Default is disabled
+        FIELD( val0, Fault_Latchoff, 0x02, 0x01 )
+        //Latched fault flag of OTG over voltage protection. Default is no fault.
+        FIELD( val0, Fault_OTG_OVP, 0x01, 0x01 )
+        //Latched fault flag of OTG over current protection. Default is no fault.
+        FIELD( val0, Fault_OTG_UCP, 0x00, 0x01 )
+        //ADC mode; one shot reading or continuous. Default is one shot
+        FIELD( val1, AC_STAT, 0x07, 0x01 )
+        //Start a one shot reading of the ADC. Resets to 0 after reading
+        FIELD( val1, ICO_DONE, 0x06, 0x01 )
+        //ADC scale; 2.04V or 3.06V. Default is 3.06V
+        FIELD( val1, IN_VINDPM, 0x04, 0x01 )
+        //ADC scale; 2.04V or 3.06V. Default is 3.06V
+        FIELD( val1, IN_IINDPM, 0x03, 0x01 )
+        //ADC scale; 2.04V or 3.06V. Default is 3.06V
+        FIELD( val1, IN_FCHRG, 0x02, 0x01 )
+        //ADC scale; 2.04V or 3.06V. Default is 3.06V
+        FIELD( val1, IN_PCHRG, 0x01, 0x01 )
+        //ADC scale; 2.04V or 3.06V. Default is 3.06V
+        FIELD( val1, IN_OTG, 0x00, 0x01 )
       } chargerStatus;
       struct ProchotStatust{
         uint16_t val = 0;

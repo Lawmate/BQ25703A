@@ -17,6 +17,7 @@ A library for interfacing with TI BQ4050 battery fuel gauge chip
 #define PRINTBIN(Num) for (uint32_t t = (1UL<< ((sizeof(Num)*8)-1)); t; t >>= 1) Serial.write(Num  & t ? '1' : '0');
 
 Lorro_BQ25703A::BitMaskt bitMask;
+Lorro_BQ25703A::Regt BQ25703Areg;
 
 
 Lorro_BQ25703A::Lorro_BQ25703A( char addr ){
