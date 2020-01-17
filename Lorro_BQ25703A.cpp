@@ -16,7 +16,7 @@ A library for interfacing with TI BQ4050 battery fuel gauge chip
 // Prints a binary number with leading zeros (Automatic Handling)
 #define PRINTBIN(Num) for (uint32_t t = (1UL<< ((sizeof(Num)*8)-1)); t; t >>= 1) Serial.write(Num  & t ? '1' : '0');
 
-Lorro_BQ25703A::BitMaskt bitMask;
+// Lorro_BQ25703A::BitMaskt bitMask;
 Lorro_BQ25703A::Regt BQ25703Areg;
 
 
