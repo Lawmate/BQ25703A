@@ -132,34 +132,38 @@ class Lorro_BQ25703A{
       } chargeOption0;
       struct ChargeCurrentt{
         uint16_t current = 2048;
-        byte val[ 2 ] = { 0x00, 0x08 };
+        byte val0 = 0x00;
+        byte val1 = 0x08;
         uint8_t addr = 0x02;
-        void update(){
+        void set_current( uint16_t set_cur ){
           //catch out of bounds
-          if( current < 64 ) current = 64;
-          if( current > 8128 ) current = 8128;
+          if( set_cur < 64 ) set_cur = 64;
+          if( set_cur > 8128 ) set_cur = 8128;
           //catch out of resolution
-          current = current / 64;
-          current = current * 64;
+          set_cur = set_cur / 64;
+          set_cur = set_cur * 64;
           //extract bytes
-          val[ 0 ] = ( byte )( current );
-          val[ 1 ] = ( byte )( current >> 8 );
+          val0 = ( byte )( set_cur );
+          val1 = ( byte )( set_cur >> 8 );
+          current = set_cur;
         }
       } chargeCurrent;
       struct MaxChargeVoltaget{
         uint16_t voltage = 16800;
-        byte val[ 2 ] = { 0xA0, 0x41 };
+        byte val0 = 0xA0;
+        byte val1 = 0x41;
         uint8_t addr = 0x04;
-        void update(){
+        void set_voltage( uint16_t set_volt ){
           //catch out of bounds
-          if( voltage < 1024 ) voltage = 1024;
-          if( voltage > 19200 ) voltage = 19200;
+          if( set_volt < 1024 ) set_volt = 1024;
+          if( set_volt > 19200 ) set_volt = 19200;
           //catch out of resolution
-          voltage = voltage / 16;
-          voltage = voltage * 16;
+          set_volt = set_volt / 16;
+          set_volt = set_volt * 16;
           //extract bytes
-          val[ 0 ] = ( byte )( voltage );
-          val[ 1 ] = ( byte )( voltage >> 8 );
+          val0 = ( byte )( set_volt );
+          val1 = ( byte )( set_volt >> 8 );
+          voltage = set_volt;
         }
       } maxChargeVoltage;
       struct ChargeOption1t{
@@ -398,8 +402,24 @@ class Lorro_BQ25703A{
         uint8_t addr = 0x0C;
       } minSystemVoltage;
       struct IIN_HOSTt{
-        uint16_t val = 0;
+        uint16_t current = 3250;
+        const byte val0 = 0x00; //not used
+        byte val1 = 0x40;
         uint8_t addr = 0x0E;
+        //Incoming current threshold when device is host.
+        //50mA to 6400 in 50mA steps, with 50mA offset.
+        void set_current( uint16_t set_cur ){
+          current = set_cur;
+          //catch out of bounds
+          if( set_cur < 50 ) set_cur = 50;
+          if( set_cur > 6400 ) set_cur = 6400;
+          //remove offset
+          set_cur = set_cur - 50;
+          //convert to steps value
+          set_cur = set_cur / 50;
+          //extract byte
+          val1 = ( byte )( set_cur << 8 );
+        }
       } iIN_HOST;
       struct ManufacturerIDt{
         byte val = 0x40;
