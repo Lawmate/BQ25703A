@@ -391,16 +391,130 @@ class Lorro_BQ25703A{
         }
       } chargeOption2;
       struct ChargeOption3t{
-        uint16_t val = 0;
+        byte bitVals[7] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        uint16_t masks[7] = {   0xFFFD, //byte LSB, bit 1
+                                0xFFFE, //byte LSB, bit 0
+                                0x7FFF, //byte MSB, bit 7
+                                0xBFFF, //byte MSB, bit 6
+                                0xDFFF, //byte MSB, bit 5
+                                0xEFFF, //byte MSB, bit 4
+                                0xF7FF, //byte MSB, bit 3
+                            };
+        byte shift[7] = { 0x01, 0x00, 0x0F, 0x0D, 0x0E, 0x0C, 0x0B };
+        //Control BAT FET during Hi-Z state. Default is disabled
+        void BATFETOFF_HIZ( byte thisVal ){ bitVals[ 0 ] = thisVal; }
+        //PSYS function during OTG mode. PSYS = battery discharge - IOTG or PSYS = battery discharge. Default 0
+        void PSYS_OTG_IDCHG( byte thisVal ){ bitVals[ 1 ] = thisVal; }
+        //Enable Hi-Z(low power) mode. Default is disabled
+        void EN_HIZ( byte thisVal ){ bitVals[ 2 ] = thisVal; }
+        //Reset registers. Set this bit to 1 to reset all other registers
+        void RESET_REG( byte thisVal ){ bitVals[ 3 ] = thisVal; }
+        //Reset VINDPM register. Default is idle (0)
+        void RESET_VINDPM( byte thisVal ){ bitVals[ 4 ] = thisVal; }
+        //Enable OTG mode to output power to VBUS. EN_OTG pin needs to be high. Default is disabled.
+        void EN_OTG( byte thisVal ){ bitVals[ 5 ] = thisVal; }
+        //Enable Input Current Optimiser. Default is disabled
+        void EN_ICO_MODE( byte thisVal ){ bitVals[ 6 ] = thisVal; }
+        byte val[ 2 ] = { 0x00, 0x00};
         uint8_t addr = 0x34;
+        void update(){
+          uint16_t tempVar = 0;
+          //cycle through arrays
+          for( uint16_t i = 0; i < sizeof( shift ); i++ ){
+            //mask relevant bit(s) in question to 0
+            tempVar = ( tempVar & masks[i] );
+            //OR in the value, shifted to the correct position
+            tempVar = ( tempVar | ( uint16_t )( bitVals[ i ] << shift[ i ] ) );
+          }
+          val[ 0 ] = ( byte )( tempVar );
+          val[ 1 ] = ( byte )( tempVar >> 8 );
+        }
       } chargeOption3;
       struct ProchotOption0t{
-        uint16_t val = 0;
+        byte bitVals[7] = { 0x01, 0x00, 0x02, 0x00, 0x00, 0x09, 0x01 };
+        uint16_t masks[7] = {   0xFF3F, //byte LSB, bit 7 & 6
+                                0xFFDF, //byte LSB, bit 5
+                                0xFFE7, //byte LSB, bit 4 & 3
+                                0xFFFB, //byte LSB, bit 2
+                                0xFFFD, //byte LSB, bit 1
+                                0x07FF, //byte MSB, bit 7, 6, 5, 4 & 3
+                                0xF9FF, //byte MSB, bit 2 & 1
+                                };
+        byte shift[7] = { 0x07, 0x05, 0x04, 0x02, 0x01, 0x0F, 0x0A };
+        //VSYS threshold; 5.75V, 6V, 6.25V, 6.5V. Default is 6V
+        void VSYS_VTH( byte thisVal ){ bitVals[ 0 ] = thisVal; }
+        //Enable PROCHOT voltage kept LOW until PROCHOT_CLEAR is written. Default is disabled
+        void EN_PROCHOT_EX( byte thisVal ){ bitVals[ 1 ] = thisVal; }
+        //Minimum PROCHOT pulse length when EN_PROCHOT_EX is disabled; 100us, 1ms, 10ms, 5ms. Default is 1ms
+        void PROCHOT_WIDTH( byte thisVal ){ bitVals[ 2 ] = thisVal; }
+        //Clears PROCHOT pulse when EN_PROCHOT_EX is enabled. Default is idle.
+        void PROCHOT_CLEAR( byte thisVal ){ bitVals[ 3 ] = thisVal; }
+        //INOM deglitch time; 1ms or 50ms. Default is 1ms
+        void INOM_DEG( byte thisVal ){ bitVals[ 4 ] = thisVal; }
+        //ILIM2 threshold as percentage of IDPM; 110%-230%(5% step), 250%-450%(50% step). Default is 150%
+        void ILIM2_VTH( byte thisVal ){ bitVals[ 5 ] = thisVal; }
+        //EICRIT deglitch time. ICRIT is 110% of ILIM2; 15us, 100us, 400us, 800us. Default is 100us.
+        void ICRIT_DEG( byte thisVal ){ bitVals[ 6 ] = thisVal; }
+        byte val[ 2 ] = { 0x50, 0x92};
         uint8_t addr = 0x36;
+        void update(){
+          uint16_t tempVar = 0;
+          //cycle through arrays
+          for( uint16_t i = 0; i < sizeof( shift ); i++ ){
+            //mask relevant bit(s) in question to 0
+            tempVar = ( tempVar & masks[i] );
+            //OR in the value, shifted to the correct position
+            tempVar = ( tempVar | ( uint16_t )( bitVals[ i ] << shift[ i ] ) );
+          }
+          val[ 0 ] = ( byte )( tempVar ); //LSB, goes in first address
+          val[ 1 ] = ( byte )( tempVar >> 8 ); //MSB, goes in second address
+        }
       } prochotOption0;
       struct ProchotOption1t{
-        uint16_t val = 0;
+        byte bitVals[9] = { 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x01 };
+        uint16_t masks[9] = {   0xFFBF, //byte LSB, bit 6
+                                0xFFDF, //byte LSB, bit 5
+                                0xFFEF, //byte LSB, bit 4
+                                0xFFF7, //byte LSB, bit 3
+                                0xFFFB, //byte LSB, bit 2
+                                0xFFFD, //byte LSB, bit 1
+                                0xFFFE, //byte LSB, bit 0
+                                0x03FF, //byte MSB, bit 7, 6, 5, 4, 3 & 2
+                                0xFCFF, //byte MSB, bit 1 & 0
+                                };
+        byte shift[9] = { 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00, 0x0F, 0x09 };
+        //PROCHOT profile comparator. Default is disabled.
+        void PROCHOT_PROFILE_COMP( byte thisVal ){ bitVals[ 0 ] = thisVal; }
+        //Prochot is triggered if ICRIT threshold is reached. Default enabled.
+        void PROCHOT_PROFILE_ICRIT( byte thisVal ){ bitVals[ 1 ] = thisVal; }
+        //Prochot is triggered if INOM threshold is reached. Default disabled.
+        void PROCHOT_PROFILE_INOM( byte thisVal ){ bitVals[ 2 ] = thisVal; }
+        //Prochot is triggered if IDCHG threshold is reached. Default disabled.
+        void PROCHOT_PROFILE_IDCHG( byte thisVal ){ bitVals[ 3 ] = thisVal; }
+        //Prochot is triggered if VSYS threshold is reached. Default disabled.
+        void PROCHOT_PROFILE_VSYS( byte thisVal ){ bitVals[ 4 ] = thisVal; }
+        //PROCHOT will be triggered if the battery is removed. Default is disabled.
+        void PROCHOT_PROFILE_BATPRES( byte thisVal ){ bitVals[ 5 ] = thisVal; }
+        //PROCHOT will be triggered if the adapter is removed. Default is disabled.
+        void PROCHOT_PROFILE_ACOK( byte thisVal ){ bitVals[ 6 ] = thisVal; }
+        //IDCHG threshold. PROCHOT is triggered when IDCHG is above; 0-32356mA in 512mA steps. Default is 16384mA
+        void IDCHG_VTH( byte thisVal ){ bitVals[ 7 ] = thisVal; }
+        //IDCHG deglitch time; 1.6ms, 100us, 6ms, 12ms. Default is 100us.
+        void IDCHG_DEG( byte thisVal ){ bitVals[ 8 ] = thisVal; }
+        byte val[ 2 ] = { 0x50, 0x92};
         uint8_t addr = 0x38;
+        void update(){
+          uint16_t tempVar = 0;
+          //cycle through arrays
+          for( uint16_t i = 0; i < sizeof( shift ); i++ ){
+            //mask relevant bit(s) in question to 0
+            tempVar = ( tempVar & masks[i] );
+            //OR in the value, shifted to the correct position
+            tempVar = ( tempVar | ( uint16_t )( bitVals[ i ] << shift[ i ] ) );
+          }
+          val[ 0 ] = ( byte )( tempVar ); //LSB, goes in first address
+          val[ 1 ] = ( byte )( tempVar >> 8 ); //MSB, goes in second address
+        }
       } prochotOption1;
       struct ADCOptiont{
         uint16_t val = 0;
