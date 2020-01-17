@@ -365,13 +365,48 @@ class Lorro_BQ25703A{
         //PROCHOT adapter removal trigger status. Default is not triggered.
         FIELD( val0, STAT_Adapter_Removal, 0x00, 0x01 )
       } prochotStatus;
-      struct IIN_DPMt{
-        uint16_t val = 0;
+      struct IIN_DPMt{ //read only
+        uint16_t current = 0;
+        byte val0 = 0x00; //not used
+        byte val1 = 0x00;
         uint8_t addr = 0x24;
+        //Incoming current threshold before device lowers charging current.
+        //50mA to 6400 in 50mA steps, with 50mA offset.
+        uint16_t get_current( ){
+          //multiply up to mA value
+          current = val1 * 50;
+          //Add in offset
+          current = current + 50;
+          return current;
+        }
       } iIN_DPM;
-      struct ADCVBUSPSYSt{
-        uint16_t val = 0;
+      struct ADCVBUSPSYSt{ //read only
+        uint16_t sysPower = 0;
+        uint16_t VBUS = 0;
+        uint32_t Rsys = 30000; //Value of resistor on PSYS pin
+        byte val0 = 0x00;
+        byte val1 = 0x00;
         uint8_t addr = 0x26;
+        //VBUS voltage and system power. VBUS is direct reading.
+        //System power(W) is Vsys(mV)/Rsys(R) * 10^3
+        uint16_t get_VBUS(){
+          //multiply up to mV value
+          VBUS = val1 * 64;
+          //Add in offset
+          VBUS = VBUS + 3200;
+          return VBUS;
+        }
+        uint16_t get_sysPower(){
+          //multiply by the 12mV resolution
+          sysPower = val0 * 12;
+          //create temp large var and multiply by 1000 (uA/W)
+          uint32_t tempPower = sysPower * 1000;
+          //Divide by the resistor value Rsys
+          tempPower = tempPower / Rsys;
+          //convert back to smaller variable
+          sysPower = ( uint16_t )tempPower;
+          return sysPower;
+        }
       } aDCVBUSPSYS;
       struct ADCIBATt{
         uint16_t val = 0;
@@ -386,16 +421,65 @@ class Lorro_BQ25703A{
         uint8_t addr = 0x2C;
       } aDCVSYSVBAT;
       struct OTGVoltaget{
-        uint16_t val = 0;
+        uint16_t voltage = 0;
+        byte val0 = 0x00;
+        byte val1 = 0x00;
         uint8_t addr = 0x06;
+        //OTG output voltage.
+        //4480mV to 20864mV in 64mA steps, with 4480mV offset.
+        void set_voltage( uint16_t set_volt ){
+          voltage = set_volt;
+          //catch out of bounds
+          if( set_volt < 4480 ) set_volt = 4480;
+          if( set_volt > 20864 ) set_volt = 20864;
+          //remove offset
+          set_volt = set_volt - 4480;
+          //catch out of resolution
+          set_volt = set_volt / 64;
+          set_volt = set_volt * 64;
+          //extract byte
+          val0 = ( byte )( set_volt );
+          val1 = ( byte )( set_volt >> 8 );
+        }
       } oTGVoltage;
       struct OTGCurrentt{
-        uint16_t val = 0;
+        uint16_t current = 0;
+        byte val0 = 0x00; //not used
+        byte val1 = 0x00;
         uint8_t addr = 0x08;
+        //OTG output current limit.
+        //0mA to 6400mA in 50mA steps.
+        void set_current( uint16_t set_cur ){
+          current = set_cur;
+          //catch out of bounds
+          if( set_cur > 6400 ) set_cur = 6400;
+          //convert to steps value
+          set_cur = set_cur / 50;
+          //extract byte
+          val1 = ( byte )( set_cur );
+        }
       } oTGCurrent;
       struct InputVoltaget{
-        uint16_t val = 0;
+        uint16_t voltage = 18720;
+        byte val0 = 0x20;
+        byte val1 = 0x49;
         uint8_t addr = 0x0A;
+        //Incoming voltage threshold before device lowers charging current.
+        //3200mV to 19584mV in 64mA steps, with 3200mV offset.
+        void set_voltage( uint16_t set_volt ){
+          voltage = set_volt;
+          //catch out of bounds
+          if( set_volt < 3200 ) set_volt = 3200;
+          if( set_volt > 19584 ) set_volt = 19584;
+          //remove offset
+          set_volt = set_volt - 3200;
+          //catch out of resolution
+          set_volt = set_volt / 64;
+          set_volt = set_volt * 64;
+          //extract byte
+          val0 = ( byte )( set_volt );
+          val1 = ( byte )( set_volt >> 8 );
+        }
       } inputVoltage;
       struct MinSystemVoltaget{
         uint16_t val = 0;
@@ -403,10 +487,10 @@ class Lorro_BQ25703A{
       } minSystemVoltage;
       struct IIN_HOSTt{
         uint16_t current = 3250;
-        const byte val0 = 0x00; //not used
+        byte val0 = 0x00; //not used
         byte val1 = 0x40;
         uint8_t addr = 0x0E;
-        //Incoming current threshold when device is host.
+        //Incoming current threshold before device lowers charging current.
         //50mA to 6400 in 50mA steps, with 50mA offset.
         void set_current( uint16_t set_cur ){
           current = set_cur;
@@ -418,7 +502,7 @@ class Lorro_BQ25703A{
           //convert to steps value
           set_cur = set_cur / 50;
           //extract byte
-          val1 = ( byte )( set_cur << 8 );
+          val1 = ( byte )( set_cur );
         }
       } iIN_HOST;
       struct ManufacturerIDt{
