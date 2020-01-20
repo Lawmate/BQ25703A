@@ -6,15 +6,15 @@
 
 //Libraries to be included
 #include "Arduino.h"
-#include <Lorro_BQ4050.h>
+#include <Lorro_BQ25703A.h>
 
 //Default address for device. Note, it is without read/write bit. When read with analyser,
 //this will appear 1 bit shifted to the left
-#define BQ4050addr     0x0B
+#define BQ25703Aaddr     0x0B
 //Initialise the device and library
-Lorro_BQ4050 BQ4050( BQ4050addr );
+Lorro_BQ25703A BQ25703A( BQ25703Aaddr );
 //Instantiate the structs
-Lorro_BQ4050::Regt registers;
+extern Lorro_BQ25703A::Regt registers;
 
 uint32_t previousMillis;
 uint16_t loopInterval = 1000;
@@ -32,13 +32,13 @@ void loop() {
   if( currentMillis - previousMillis > loopInterval ){
     previousMillis = currentMillis;
 
-    BQ4050.readReg( registers.relativeStateOfCharge );
+    BQ25703A.readReg( registers.relativeStateOfCharge );
     Serial.print( "State of charge: " );
     Serial.print( registers.relativeStateOfCharge.val );
     Serial.println( "%" );
     delay( 15 );
 
-    BQ4050.readReg( registers.voltage );
+    BQ25703A.readReg( registers.voltage );
     Serial.print( "Pack voltage: " );
     Serial.print( registers.voltage.val );
     Serial.println( "mV" );
@@ -67,7 +67,7 @@ void loop() {
     Serial.print( registers.cellVoltage4.val );
     Serial.println( "mV" );
     delay( 15 );
-    
+
     BQ4050.readReg( registers.current );
     Serial.print( "Current: " );
     Serial.print( registers.current.val );

@@ -18,11 +18,10 @@ A library for interfacing with TI BQ4050 battery fuel gauge chip
 
 // Lorro_BQ25703A::BitMaskt bitMask;
 Lorro_BQ25703A::Regt BQ25703Areg;
+const byte Lorro_BQ25703A::BQ25703Aaddr = 0xD6;
 
-
-Lorro_BQ25703A::Lorro_BQ25703A( char addr ){
-// Arduino_BQ4050::Arduino_BQ4050(  ){
-  BQ25703Aaddr = addr;
+Lorro_BQ25703A::Lorro_BQ25703A( const char addr ){
+  // BQ25703Aaddr = addr;
   Wire.begin();
   // getChargerOption0();
   setChargerOption0();
@@ -407,6 +406,35 @@ void Lorro_BQ25703A::write2ByteReg( byte devAddress, byte regAddress, byte dataB
 
 }
 
-boolean Lorro_BQ25703A::readDataReg( char devAddress, byte regAddress, byte *dataVal, uint8_t arrLen ){
-  return true;
+static boolean Lorro_BQ25703A::readDataReg( const byte regAddress, byte *dataVal, const uint8_t arrLen ){
+
+  Wire.beginTransmission( BQ25703Aaddr );
+  Wire.write( regAddress );
+  byte ack = Wire.endTransmission();
+  if( ack == 0 ){
+    Wire.requestFrom( ( int )BQ25703Aaddr , ( int )( arrLen + 1 ) );
+    if( Wire.available() > 0 ){
+      for( uint8_t i = 0; i < arrLen; i++ ){
+        dataVal[ i ] = Wire.receive();
+      }
+    }
+    return true;
+  }else{
+    return false; //if I2C comm fails
+  }
+}
+
+static boolean Lorro_BQ25703A::writeDataReg( const byte regAddress, byte dataVal0, byte dataVal1 ){
+
+  Wire.beginTransmission( BQ25703Aaddr );
+  Wire.write( regAddress );
+  Wire.write( dataVal0 );
+  Wire.write( dataVal1 );
+  byte ack = Wire.endTransmission();
+  if( ack == 0 ){
+    return true;
+  }else{
+    return false; //if I2C comm fails
+  }
+
 }

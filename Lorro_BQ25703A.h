@@ -39,7 +39,7 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 
 class Lorro_BQ25703A{
  public:
-	Lorro_BQ25703A( char addr );
+	Lorro_BQ25703A( const char addr );
 	void getVBUS();
  	void getVSYS();
 	float getVBAT();
@@ -63,29 +63,55 @@ class Lorro_BQ25703A{
 	void setContADC();
 	void setADCEns();
 	void setSysVoltage();
-  char BQ25703Aaddr;
+  static const byte BQ25703Aaddr;
+  // #define BQ25703Aaddr 0xD6
   template<typename T>
-  boolean readReg( T& dataParam ){
-
+  static boolean readReg( const T& dataParam, const uint8_t arrLen ){
     //This is a function for reading data words.
     //The number of bytes that make up a word is either 1 or 2.
 
-    //Measure the number of bytes to look for
-    constexpr uint8_t byteLen = sizeof( dataParam.val );
     //Create an array to hold the returned data
-    byte valBytes[ byteLen ];
+    const byte valBytes[ arrLen ];
     //Function to handle the I2C comms.
-    if( readDataReg( BQ25703Aaddr, ( byte )dataParam.addr, valBytes, byteLen ) ){
+    if( readDataReg( dataParam.addr, valBytes, arrLen ) ){
       //Cycle through array of data
-      for( int i = 0; i < byteLen; i++ ){
-        //Shift each byte in to the right, in steps of 8 bits. The resulting data is type cast, by getting the type with decltype
-        dataParam.val = ( decltype( dataParam.val ) ) ( dataParam.val | ( valBytes[ i ] << ( 8 * i ) ) );
-      }
+      dataParam.val0 = valBytes[ 0 ];
+      dataParam.val1 = valBytes[ 1 ];
       return true;
     }else{
       return false;
     }
 
+  }
+  template<typename T>
+  static boolean writeReg( const T& dataParam, const byte devAddr ){
+    //This is a function for writing data words.
+    //The number of bytes that make up a word is 2.
+
+    //Create an array to pass the bytes with
+    // const byte valBytes[ 2 ] = { dataParam->val0, dataParam->val1 };
+    //Function to handle the I2C comms.
+    if( writeDataReg( dataParam->addr, dataParam->val0, dataParam->val1 ) ){
+    // if( 1 ){
+      return true;
+    }else{
+      return false;
+    }
+
+  }
+  template<typename T>
+  static void setBytes( const T& dataParam, uint16_t value, uint16_t minVal, uint16_t maxVal, uint16_t offset, uint16_t resVal ){
+    //catch out of bounds
+    if( value < minVal ) value = minVal;
+    if( value > maxVal ) value = maxVal;
+    //remove offset
+    value = value - offset;
+    //catch out of resolution
+    value = value / resVal;
+    value = value * resVal;
+    //extract bytes and return to struct variables
+    dataParam->val0 = ( byte )( value );
+    dataParam->val1 = ( byte )( value >> 8 );
   }
   //macro to generate bit mask to access bits
   #define GETMASK(index, size) (((1 << (size)) - 1) << (index))
@@ -136,15 +162,9 @@ class Lorro_BQ25703A{
         byte val1 = 0x08;
         uint8_t addr = 0x02;
         void set_current( uint16_t set_cur ){
-          //catch out of bounds
-          if( set_cur < 64 ) set_cur = 64;
-          if( set_cur > 8128 ) set_cur = 8128;
-          //catch out of resolution
-          set_cur = set_cur / 64;
-          set_cur = set_cur * 64;
-          //extract bytes
-          val0 = ( byte )( set_cur );
-          val1 = ( byte )( set_cur >> 8 );
+          setBytes( this, set_cur, 64, 8128, 0, 64 );
+          static const byte tmpB = 0xD6;
+          writeReg( this, tmpB );
           current = set_cur;
         }
       } chargeCurrent;
@@ -154,15 +174,7 @@ class Lorro_BQ25703A{
         byte val1 = 0x41;
         uint8_t addr = 0x04;
         void set_voltage( uint16_t set_volt ){
-          //catch out of bounds
-          if( set_volt < 1024 ) set_volt = 1024;
-          if( set_volt > 19200 ) set_volt = 19200;
-          //catch out of resolution
-          set_volt = set_volt / 16;
-          set_volt = set_volt * 16;
-          //extract bytes
-          val0 = ( byte )( set_volt );
-          val1 = ( byte )( set_volt >> 8 );
+          setBytes( this, set_volt, 1024, 19200, 0, 16 );
           voltage = set_volt;
         }
       } maxChargeVoltage;
@@ -373,6 +385,7 @@ class Lorro_BQ25703A{
         //Incoming current threshold before device lowers charging current.
         //50mA to 6400 in 50mA steps, with 50mA offset.
         uint16_t get_current( ){
+          // readReg( *this );
           //multiply up to mA value
           current = val1 * 50;
           //Add in offset
@@ -408,17 +421,60 @@ class Lorro_BQ25703A{
           return sysPower;
         }
       } aDCVBUSPSYS;
-      struct ADCIBATt{
-        uint16_t val = 0;
+      struct ADCIBATt{ //read only
+        uint16_t ICHG, IDCHG;
+        byte val0, val1;
         uint8_t addr = 0x28;
+        //ICHG charging current value
+        uint16_t get_ICHG(){
+          //multiply up to mA value
+          ICHG = val1 * 64;
+          return ICHG;
+        }
+        //IDCHG discharging current value
+        uint16_t get_IDHG(){
+          //multiply up to mA value
+          IDCHG = val0 * 256;
+          return IDCHG;
+        }
       } aDCIBAT;
-      struct ADCIINCMPINt{
-        uint16_t val = 0;
+      struct ADCIINCMPINt{ //read only
+        uint16_t IIN, CMPIN;
+        byte val0, val1;
         uint8_t addr = 0x2A;
+        //IIN input current reading
+        uint16_t get_IIN(){
+          //multiply up to mA value
+          IIN = val1 * 50;
+          return IIN;
+        }
+        //CMPIN voltage on comparator pin
+        uint16_t get_CMPIN(){
+          //multiply up to mV value
+          CMPIN = val0 * 12;
+          return CMPIN;
+        }
       } aDCIINCMPIN;
-      struct ADCVSYSVBATt{
-        uint16_t val = 0;
+      struct ADCVSYSVBATt{ //read only
+        uint16_t VSYS, VBAT;
+        byte val0, val1;
         uint8_t addr = 0x2C;
+        //VSYS system voltage
+        uint16_t get_VSYS(){
+          //multiply up to mV value
+          VSYS = val1 * 64;
+          //Add in offset voltage
+          VSYS = VSYS + 2880;
+          return VSYS;
+        }
+        //VBAT voltage of battery
+        uint16_t get_VBAT(){
+          //multiply up to mV value
+          VBAT = val0 * 64;
+          //Add in offset voltage
+          VBAT = VBAT + 2880;
+          return VBAT;
+        }
       } aDCVSYSVBAT;
       struct OTGVoltaget{
         uint16_t voltage = 0;
@@ -428,18 +484,8 @@ class Lorro_BQ25703A{
         //OTG output voltage.
         //4480mV to 20864mV in 64mA steps, with 4480mV offset.
         void set_voltage( uint16_t set_volt ){
+          setBytes( this, set_volt, 4480, 20864, 4480, 64 );
           voltage = set_volt;
-          //catch out of bounds
-          if( set_volt < 4480 ) set_volt = 4480;
-          if( set_volt > 20864 ) set_volt = 20864;
-          //remove offset
-          set_volt = set_volt - 4480;
-          //catch out of resolution
-          set_volt = set_volt / 64;
-          set_volt = set_volt * 64;
-          //extract byte
-          val0 = ( byte )( set_volt );
-          val1 = ( byte )( set_volt >> 8 );
         }
       } oTGVoltage;
       struct OTGCurrentt{
@@ -450,13 +496,8 @@ class Lorro_BQ25703A{
         //OTG output current limit.
         //0mA to 6400mA in 50mA steps.
         void set_current( uint16_t set_cur ){
+          setBytes( this, set_cur, 0, 6400, 0, 50 );
           current = set_cur;
-          //catch out of bounds
-          if( set_cur > 6400 ) set_cur = 6400;
-          //convert to steps value
-          set_cur = set_cur / 50;
-          //extract byte
-          val1 = ( byte )( set_cur );
         }
       } oTGCurrent;
       struct InputVoltaget{
@@ -467,23 +508,20 @@ class Lorro_BQ25703A{
         //Incoming voltage threshold before device lowers charging current.
         //3200mV to 19584mV in 64mA steps, with 3200mV offset.
         void set_voltage( uint16_t set_volt ){
+          setBytes( this, set_volt, 3200, 19584, 3200, 64 );
           voltage = set_volt;
-          //catch out of bounds
-          if( set_volt < 3200 ) set_volt = 3200;
-          if( set_volt > 19584 ) set_volt = 19584;
-          //remove offset
-          set_volt = set_volt - 3200;
-          //catch out of resolution
-          set_volt = set_volt / 64;
-          set_volt = set_volt * 64;
-          //extract byte
-          val0 = ( byte )( set_volt );
-          val1 = ( byte )( set_volt >> 8 );
         }
       } inputVoltage;
       struct MinSystemVoltaget{
-        uint16_t val = 0;
+        uint16_t voltage = 12288;
+        byte val0, val1 = 0x30;
         uint8_t addr = 0x0C;
+        //Minimum system voltage. Default is for 4S.
+        //1024mV to 16128mV in 256mV steps, no offset
+        void set_voltage( uint16_t set_volt ){
+          setBytes( this, set_volt, 1024, 12288, 0, 256 );
+          voltage = set_volt;
+        }
       } minSystemVoltage;
       struct IIN_HOSTt{
         uint16_t current = 3250;
@@ -493,24 +531,18 @@ class Lorro_BQ25703A{
         //Incoming current threshold before device lowers charging current.
         //50mA to 6400 in 50mA steps, with 50mA offset.
         void set_current( uint16_t set_cur ){
+          setBytes( this, set_cur, 50, 6400, 50, 50 );
           current = set_cur;
-          //catch out of bounds
-          if( set_cur < 50 ) set_cur = 50;
-          if( set_cur > 6400 ) set_cur = 6400;
-          //remove offset
-          set_cur = set_cur - 50;
-          //convert to steps value
-          set_cur = set_cur / 50;
-          //extract byte
-          val1 = ( byte )( set_cur );
         }
       } iIN_HOST;
-      struct ManufacturerIDt{
-        byte val = 0x40;
+      struct ManufacturerIDt{ //read only
+        //Manufacturer ID. Always 0x40
+        byte val0 = 0x40;
         uint8_t addr = 0x2E;
       } manufacturerID;
-      struct DeviceID{
-        byte val = 0x78;
+      struct DeviceID{ //read only
+        //Device ID. Always 0x78
+        byte val0 = 0x78;
         uint8_t addr = 0x2F;
       } deviceID;
     } ;
@@ -523,6 +555,8 @@ class Lorro_BQ25703A{
 	uint16_t readBlockReg( char devAddress, byte regAddress, byte *block );
 	void writeByteReg( byte devAddress, byte regAddress, byte dataByte );
 	void write2ByteReg( byte devAddress, byte regAddress, byte dataByte1, byte dataByte2 );
-  boolean readDataReg( char devAddress, byte regAddress, byte *dataVal, uint8_t arrLen );
+  static boolean readDataReg( const byte regAddress, byte *dataVal, const uint8_t arrLen );
+  // static boolean writeDataReg( const byte regAddress, byte *dataVal );
+  static boolean writeDataReg( const byte regAddress, byte dataVal0, byte dataVal1 );
 
 };
