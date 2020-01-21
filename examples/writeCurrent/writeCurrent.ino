@@ -1,63 +1,87 @@
 /**
-  Example of how to write values to the flash storage on the TI BQ4050 fuel gauge chip.
-  Writing to the data flash will only work if the chip is in the unsealed state.
-  Most shipped products that use the chip such as smart batteries, will be in the
-  sealed state.
-  If you are starting with a fresh chip and want to calibrate your own battery,
-  this example will be useful.
-  These values are purely demonstrative. You will need to read through the docs
-  at https://www.ti.com/tool/GPCCEDV
+  Example of setting the charge current so that charging commences. It also includes
+  setting the max charge voltage. This defaults as 16800mV but in reality will fluctuate
+  up above this by enough to trip a battery protector is there is one further down
+  the system. This is why it is set slightly lower.
+  Once the current is set, the current going into the batteries and coming out of
+  them is read every second.
+
+  This library is written to handle writing to and reading from the registers.
+  Read the datasheet to get a full understanding of the device registers and an
+  example circuit. http://www.ti.com/lit/ds/symlink/bq25703a.pdf
 **/
 
 //Libraries to be included
 #include "Arduino.h"
-#include "Lorro_BQ4050.h"
+#include <Lorro_BQ25703A.h>
 
-//Default address for device. Note, it is without read/write bit. When read with analyser,
-//this will appear 1 bit shifted to the left
-#define BQ4050addr     0x0B
 //Initialise the device and library
-Lorro_BQ4050 BQ4050( BQ4050addr );
-//Instantiate the structs
-Lorro_BQ4050::Regt registers;
+Lorro_BQ25703A BQ25703A;
+const byte Lorro_BQ25703A::BQ25703Aaddr = BQ25703ADevaddr;
+
+//Instantiate with reference to global set
+extern Lorro_BQ25703A::Regt BQ25703Areg;
+
+uint32_t previousMillis;
+uint16_t loopInterval = 1000;
 
 void setup(){
 
-  //In the setup function, we simply write 3 values in 3 different ways. You can either go through
-  //the header file and edit the values there, or send them from here in the main program
-  //The thing to be aware of is the data type. The values range from 1 to 4 bytes in length
-  //and are either signed or unsigned.
+  //Setting the max voltage that the charger will charge the batteries up to.
+  //This value gets rounded to multiples of 16mV
+  //When setting numerical registers, calling the set_ function
+  //will also send the bytes to the device.
+  BQ25703Areg.maxChargeVoltage.set_voltage( 16400 );
+  delay( 15 );
 
-  //Instantiate the data structure
-  Lorro_BQ4050::DFt DataFlash;
+  //Sets the charge current. This needs to be set before any charging of
+  //the batteries starts, as it is defaulted to 0. Any value entered will
+  //be rounded to multiples of 64mA.
+  BQ25703Areg.chargeCurrent.set_current( 1500 );
+  delay( 15 );
 
-  //This is how to write a value from the value that is stored in the header file.
-  //If you edit the header file directly, use this method to write the flash from
-  //your main program. This method means you don't need to know the data type in
-  //the main program.
-  BQ4050.writeFlash( DataFlash.protections.OCD1.threshold, DataFlash.protections.OCD1.threshold.val );
+  //Set the watchdog timer to not have a timeout
+  //When changing bitfield values, call the writeRegEx function
+  //This is so you can change all the bits you want before sending out the byte.
+  BQ25703Areg.chargeOption0.set_WDTMR_ADJ( 0 );
+  BQ25703A.writeRegEx( BQ25703Areg.chargeOption0 );
+  delay( 15 );
 
-  //Put a delay of at least 15mS between writing different values, otherwise the
-  //chip won't reliably respond properly
-  delay(15);
+  //Set the ADC on IBAT to record values
+  BQ25703Areg.chargeOption1.set_EN_IBAT( 1 );
+  BQ25703A.writeRegEx( BQ25703Areg.chargeOption1 );
+  delay( 15 );
 
-  //The second method is if you write the value from the main program. You need to
-  //know the data type of the value you are sending for this method.
-  uint8_t delayVal = 6;
-  BQ4050.writeFlash( DataFlash.protections.OCD1.delay, delayVal );
-  delay(15);
-
-  //The third method is if you don't want to look up the data type, you can use
-  //the decltype function to return the datatype from the header file and cast the
-  //value to be written to that type.
-  BQ4050.writeFlash( DataFlash.gasGauging.state.learnedFCC, ( decltype( DataFlash.gasGauging.state.learnedFCC.val ) )2600 );
-
-  //This is a function dedicated to writing the flash value for the number of number
-  //of cells in the pack. Any value above 4 will be cut to 4.
-  BQ4050.numberOfCells( 4 );
+  //Set ADC to make continuous readings. (uses more power)
+  BQ25703Areg.aDCOption.set_ADC_CONV( 1 );
+  //Set individual ADC registers to read. All have default off.
+  BQ25703Areg.aDCOption.set_EN_ADC_IDCHG( 1 );
+  BQ25703Areg.aDCOption.set_EN_ADC_ICHG( 1 );
+  //Once bits have been twiddled, send bytes to device
+  BQ25703A.writeRegEx( BQ25703Areg.aDCOption );
+  delay( 15 );
 
 }
 
 void loop(){
 
+    uint32_t currentMillis = millis();
+
+    if( currentMillis - previousMillis > loopInterval ){
+      previousMillis = currentMillis;
+
+      Serial.print( "Charging current: " );
+      //Calls the get_IBAT() function in the struct. Calling the function
+      //will read the register from the device and return the value, converted
+      //into real units
+      Serial.print( BQ25703Areg.aDCIBAT.get_ICHG() );
+      Serial.println( "mA" );
+      delay( 15 );
+
+      Serial.print( "Discharge current: " );
+      Serial.print( BQ25703Areg.aDCIBAT.get_IDCHG() );
+      Serial.println( "mA" );
+      delay( 15 );
+
+    }
 }

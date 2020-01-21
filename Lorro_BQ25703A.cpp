@@ -18,59 +18,60 @@ A library for interfacing with TI BQ4050 battery fuel gauge chip
 
 // Lorro_BQ25703A::BitMaskt bitMask;
 Lorro_BQ25703A::Regt BQ25703Areg;
-const byte Lorro_BQ25703A::BQ25703Aaddr = 0xD6;
+// const byte Lorro_BQ25703A::BQ25703Aaddr = 0xD6;
 
-Lorro_BQ25703A::Lorro_BQ25703A( const char addr ){
+Lorro_BQ25703A::Lorro_BQ25703A(){
   // BQ25703Aaddr = addr;
   Wire.begin();
   // getChargerOption0();
-  setChargerOption0();
-  setChargerOption1();
-  setContADC();
-  setADCEns();
-  uint16_t maxVoltage = 16480;
-  setMaxChargeVoltage( maxVoltage );
+  // setChargerOption0();
+  // setChargerOption1();
+  // setContADC();
+  // setADCEns();
+  // uint16_t maxVoltage = 16480;
+  // setMaxChargeVoltage( maxVoltage );
 }
 
 void Lorro_BQ25703A::getVBUS(){
 
-  setContADC();
-  setADCEns();
-  byte VBUSbyte = readByteReg( BQ25703Aaddr, adcVBUS );
-  Serial.print( "VBUS voltage reg: " );
-  PRINTBIN(VBUSbyte);
-  Serial.println();
-  float VBus = ( VBUSbyte * 0.064 ) + 3.2;
-  Serial.print("VBUS voltage: ");
-  Serial.print(VBus);
-  Serial.println("V");
+  // setContADC();
+  // setADCEns();
+  // byte VBUSbyte = readByteReg( BQ25703Aaddr, adcVBUS );
+  // Serial.print( "VBUS voltage reg: " );
+  // PRINTBIN(VBUSbyte);
+  // Serial.println();
+  // float VBus = ( VBUSbyte * 0.064 ) + 3.2;
+  // Serial.print("VBUS voltage: ");
+  // Serial.print(VBus);
+  // Serial.println("V");
 }
 
 void Lorro_BQ25703A::getVSYS(){
 
-  setContADC();
-  setADCEns();
-  byte VSYSbyte = readByteReg( BQ25703Aaddr, adcVSYS );
-  Serial.print( "System voltage reg: " );
-  PRINTBIN(VSYSbyte);
-  Serial.println();
-  float VSYS = ( VSYSbyte * 0.064 ) + 2.88;
-  Serial.print("VSYS voltage: ");
-  Serial.print(VSYS);
-  Serial.println("V");
+  // setContADC();
+  // setADCEns();
+  // byte VSYSbyte = readByteReg( BQ25703Aaddr, adcVSYS );
+  // Serial.print( "System voltage reg: " );
+  // PRINTBIN(VSYSbyte);
+  // Serial.println();
+  // float VSYS = ( VSYSbyte * 0.064 ) + 2.88;
+  // Serial.print("VSYS voltage: ");
+  // Serial.print(VSYS);
+  // Serial.println("V");
 }
 
 float Lorro_BQ25703A::getVBAT(){
 
-  byte VBATbyte = readByteReg( BQ25703Aaddr, adcVBAT );
-  Serial.print( "Battery voltage reg: " );
-  PRINTBIN(VBATbyte);
-  Serial.println();
-  float VBAT = ( VBATbyte * 0.064 ) + 2.88;
-  Serial.print("VBAT voltage: ");
-  Serial.print(VBAT);
-  Serial.println("V");
-  return VBAT;
+  // byte VBATbyte = readByteReg( BQ25703Aaddr, adcVBAT );
+  // Serial.print( "Battery voltage reg: " );
+  // PRINTBIN(VBATbyte);
+  // Serial.println();
+  // float VBAT = ( VBATbyte * 0.064 ) + 2.88;
+  // Serial.print("VBAT voltage: ");
+  // Serial.print(VBAT);
+  // Serial.println("V");
+  // return VBAT;
+  return true;
 }
 
 float Lorro_BQ25703A::getICHG(){
@@ -78,51 +79,55 @@ float Lorro_BQ25703A::getICHG(){
   // setChargerOption1();
   // setContADC();
   // setADCEns();
-  byte ICHGbyte = readByteReg( BQ25703Aaddr, adcICHG );
-  // Serial.print( "Charging current reg: " );
-  // PRINTBIN(ICHGbyte);
-  // Serial.println();
-  // printByteVal( ICHGbyte );
-  float ICHG = ( ICHGbyte * 0.064 );
-  // Serial.print("ICHG current: ");
-  // Serial.print(ICHG);
-  // Serial.println("A");
-  return ICHG;
+  // byte ICHGbyte = readByteReg( BQ25703Aaddr, adcICHG );
+  // // Serial.print( "Charging current reg: " );
+  // // PRINTBIN(ICHGbyte);
+  // // Serial.println();
+  // // printByteVal( ICHGbyte );
+  // float ICHG = ( ICHGbyte * 0.064 );
+  // // Serial.print("ICHG current: ");
+  // // Serial.print(ICHG);
+  // // Serial.println("A");
+  // return ICHG;
+  return true;
 }
 
 float Lorro_BQ25703A::getIDCHG(){
 
-  byte IDCHGbyte = readByteReg( BQ25703Aaddr, adcIDCHG );
-  Serial.print( "Discharge current reg: " );
-  PRINTBIN(IDCHGbyte);
-  Serial.println();
-  // printByteVal( IDCHGbyte );
-  float IDCHG = ( IDCHGbyte * 0.256 );
-  // Serial.print("IDCHG current: ");
-  // Serial.print(IDCHG);
-  // Serial.println("A");
-  return IDCHG;
+  // byte IDCHGbyte = readByteReg( BQ25703Aaddr, adcIDCHG );
+  // Serial.print( "Discharge current reg: " );
+  // PRINTBIN(IDCHGbyte);
+  // Serial.println();
+  // // printByteVal( IDCHGbyte );
+  // float IDCHG = ( IDCHGbyte * 0.256 );
+  // // Serial.print("IDCHG current: ");
+  // // Serial.print(IDCHG);
+  // // Serial.println("A");
+  // return IDCHG;
+  return true;
 }
 
 float Lorro_BQ25703A::getIIN(){
 
-  byte IINbyte = readByteReg( BQ25703Aaddr, adcIIN );
-  Serial.print( "Incoming current reg: " );
-  PRINTBIN(IINbyte);
-  Serial.println();
-  float IIN = ( IINbyte * 0.050 );
-  return IIN;
+  // byte IINbyte = readByteReg( BQ25703Aaddr, adcIIN );
+  // Serial.print( "Incoming current reg: " );
+  // PRINTBIN(IINbyte);
+  // Serial.println();
+  // float IIN = ( IINbyte * 0.050 );
+  // return IIN;
+  return true;
 
 }
 
 float Lorro_BQ25703A::getCMPIN(){
 
-  byte CMPINbyte = readByteReg( BQ25703Aaddr, adcCMPIN );
-  Serial.print( "CMPIN reg: " );
-  PRINTBIN(CMPINbyte);
-  Serial.println();
-  float CMPIN = ( CMPINbyte * 0.012 );
-  return CMPIN;
+  // byte CMPINbyte = readByteReg( BQ25703Aaddr, adcCMPIN );
+  // Serial.print( "CMPIN reg: " );
+  // PRINTBIN(CMPINbyte);
+  // Serial.println();
+  // float CMPIN = ( CMPINbyte * 0.012 );
+  // return CMPIN;
+  return true;
 
 }
 
@@ -141,92 +146,92 @@ void Lorro_BQ25703A::getDevID(){
 }
 
 void Lorro_BQ25703A::getADCOptions(){
-  byte ADCOpt = readByteReg( BQ25703Aaddr, ADCOptions );
-  Serial.print("ADC options:\t\t");
-  Serial.println( ADCOpt , HEX);
+  // byte ADCOpt = readByteReg( BQ25703Aaddr, ADCOptions );
+  // Serial.print("ADC options:\t\t");
+  // Serial.println( ADCOpt , HEX);
   // printByteVal( ADCOpt );
 }
 
 void Lorro_BQ25703A::getADCEns(){
-  byte ADCEn = readByteReg( BQ25703Aaddr, ADCEns );
-  Serial.print("ADC enabled:\t\t");
-  Serial.println( ADCEn , HEX);
+  // byte ADCEn = readByteReg( BQ25703Aaddr, ADCEns );
+  // Serial.print("ADC enabled:\t\t");
+  // Serial.println( ADCEn , HEX);
   // printByteVal( ADCEn );
 }
 
 void Lorro_BQ25703A::getSysVoltage(){
-  byte sysVoltage = readByteReg( BQ25703Aaddr, SysVolt );
-  Serial.print("System voltage:\t\t");
-  // printByteVal( sysVoltage );
-  float SysVoltSetting = ( sysVoltage * 0.256 );// + 2.88;
-  Serial.print(SysVoltSetting);
-  Serial.println("V");
+  // byte sysVoltage = readByteReg( BQ25703Aaddr, SysVolt );
+  // Serial.print("System voltage:\t\t");
+  // // printByteVal( sysVoltage );
+  // float SysVoltSetting = ( sysVoltage * 0.256 );// + 2.88;
+  // Serial.print(SysVoltSetting);
+  // Serial.println("V");
 }
 
 void Lorro_BQ25703A::getChargerStatus(){
-  byte chrgStatus1 = readByteReg( BQ25703Aaddr, chargerStatus1 );
-  Serial.print("Charger status 1:\t");
-  Serial.println( chrgStatus1 );
-  // printByteVal( chrgStatus1 );
-  byte chrgStatus2 = readByteReg( BQ25703Aaddr, chargerStatus2 );
-  Serial.print("Charger status 2:\t");
-  Serial.println( chrgStatus2 );
+  // byte chrgStatus1 = readByteReg( BQ25703Aaddr, chargerStatus1 );
+  // Serial.print("Charger status 1:\t");
+  // Serial.println( chrgStatus1 );
+  // // printByteVal( chrgStatus1 );
+  // byte chrgStatus2 = readByteReg( BQ25703Aaddr, chargerStatus2 );
+  // Serial.print("Charger status 2:\t");
+  // Serial.println( chrgStatus2 );
   // printByteVal( chrgStatus2 );
 }
 
 void Lorro_BQ25703A::getChargeCurrent(){
-  byte chrgCurrent1 = readByteReg( BQ25703Aaddr, chargeCurrentreg1 );
-//  Serial.print("Charger current 1:\t");
-//  printByteVal( chrgCurrent1 );
-  byte chrgCurrent2 = readByteReg( BQ25703Aaddr, chargeCurrentreg2 );
-//  Serial.print("Charger current 2:\t");
-//  printByteVal( chrgCurrent2 );
-  uint16_t chargeCurr = chrgCurrent1 << 8 | chrgCurrent2;
-//  PRINTBIN(chargeCurr)
-//  Serial.println();
-  chargeCurr = 64 * ( chargeCurr >> 6 );
-//  PRINTBIN(chargeCurr)
-//  Serial.println();
-  float chargeCurrent = float( chargeCurr ) / 1000;
-//  PRINTBIN(chargeVolt)
-//  Serial.println();
-  Serial.print( "Charge current: " );
-  Serial.print( chargeCurrent, 3 );
-  Serial.println( " A" );
+//   byte chrgCurrent1 = readByteReg( BQ25703Aaddr, chargeCurrentreg1 );
+// //  Serial.print("Charger current 1:\t");
+// //  printByteVal( chrgCurrent1 );
+//   byte chrgCurrent2 = readByteReg( BQ25703Aaddr, chargeCurrentreg2 );
+// //  Serial.print("Charger current 2:\t");
+// //  printByteVal( chrgCurrent2 );
+//   uint16_t chargeCurr = chrgCurrent1 << 8 | chrgCurrent2;
+// //  PRINTBIN(chargeCurr)
+// //  Serial.println();
+//   chargeCurr = 64 * ( chargeCurr >> 6 );
+// //  PRINTBIN(chargeCurr)
+// //  Serial.println();
+//   float chargeCurrent = float( chargeCurr ) / 1000;
+// //  PRINTBIN(chargeVolt)
+// //  Serial.println();
+//   Serial.print( "Charge current: " );
+//   Serial.print( chargeCurrent, 3 );
+//   Serial.println( " A" );
 }
 
 void Lorro_BQ25703A::getMaxChargeVoltage(){
-  byte chrgVoltage1 = readByteReg( BQ25703Aaddr, maxChargeVoltageReg2 );
-  byte chrgVoltage2 = readByteReg( BQ25703Aaddr, maxChargeVoltageReg1 );
-  uint16_t chargeVolt = chrgVoltage1 << 8 | chrgVoltage2;
-  chargeVolt = 16 * ( chargeVolt >> 4 );
-  float chargeVoltage = float( chargeVolt ) / 1000;
-//  PRINTBIN(chargeVolt)
-//  Serial.println();
-  Serial.print( "Charge voltage: " );
-  Serial.print( chargeVoltage, 3 );
-  Serial.println( "V" );
+//   byte chrgVoltage1 = readByteReg( BQ25703Aaddr, maxChargeVoltageReg2 );
+//   byte chrgVoltage2 = readByteReg( BQ25703Aaddr, maxChargeVoltageReg1 );
+//   uint16_t chargeVolt = chrgVoltage1 << 8 | chrgVoltage2;
+//   chargeVolt = 16 * ( chargeVolt >> 4 );
+//   float chargeVoltage = float( chargeVolt ) / 1000;
+// //  PRINTBIN(chargeVolt)
+// //  Serial.println();
+//   Serial.print( "Charge voltage: " );
+//   Serial.print( chargeVoltage, 3 );
+//   Serial.println( "V" );
 }
 
-void Lorro_BQ25703A::setMaxChargeVoltage( uint16_t maxVoltage ){
+void Lorro_BQ25703A::setMaxChargeVoltage(){
 
-  maxVoltage /= 16; //to make sure value is in 16mV steps
-  maxVoltage *= 16;
-
-  byte chrgVoltage1 = maxVoltage >> 8; //shift 8 right to preserve MSB's
-  byte chrgVoltage2 = maxVoltage; //no shifting here as converting from uint16_t to byte discards 8 MSB's
-
-  write2ByteReg( BQ25703Aaddr, maxChargeVoltageReg1, chrgVoltage2, chrgVoltage1 );
+  // maxVoltage /= 16; //to make sure value is in 16mV steps
+  // maxVoltage *= 16;
+  //
+  // byte chrgVoltage1 = maxVoltage >> 8; //shift 8 right to preserve MSB's
+  // byte chrgVoltage2 = maxVoltage; //no shifting here as converting from uint16_t to byte discards 8 MSB's
+  //
+  // write2ByteReg( BQ25703Aaddr, maxChargeVoltageReg1, chrgVoltage2, chrgVoltage1 );
 
 }
 
 void Lorro_BQ25703A::getChargerOption0(){
-  byte chrgOption1 = readByteReg( BQ25703Aaddr, chargerOption0reg1 );
-  PRINTBIN(chrgOption1);
-  Serial.println();
-  byte chrgOption2 = readByteReg( BQ25703Aaddr, chargerOption0reg2 );
-  PRINTBIN(chrgOption2);
-  Serial.println();
+  // byte chrgOption1 = readByteReg( BQ25703Aaddr, chargerOption0reg1 );
+  // PRINTBIN(chrgOption1);
+  // Serial.println();
+  // byte chrgOption2 = readByteReg( BQ25703Aaddr, chargerOption0reg2 );
+  // PRINTBIN(chrgOption2);
+  // Serial.println();
   // // byte chargerOption01 = 0x06;
   // byte chargerOption01 = 0xE2;
   // PRINTBIN(chargerOption01);
@@ -241,46 +246,46 @@ void Lorro_BQ25703A::getChargerOption0(){
 
 void Lorro_BQ25703A::setChargerOption0(){
   //don't turn watchdog timer on
-  byte chargerOption01 = 0x82;
-  // PRINTBIN(chargerOption01);
-  // Serial.println();
-  // writeByteReg( BQ25703Aaddr, chargerOption0reg1, chargerOption01 );
-  byte chargerOption02 = 0x0E;
-  // PRINTBIN(chargerOption02);
-  // Serial.println();
-  // writeByteReg( BQ25703Aaddr, chargerOption0reg2, chargerOption02 );
-  write2ByteReg( BQ25703Aaddr, chargerOption0reg2, chargerOption01, chargerOption02 );
+  // byte chargerOption01 = 0x82;
+  // // PRINTBIN(chargerOption01);
+  // // Serial.println();
+  // // writeByteReg( BQ25703Aaddr, chargerOption0reg1, chargerOption01 );
+  // byte chargerOption02 = 0x0E;
+  // // PRINTBIN(chargerOption02);
+  // // Serial.println();
+  // // writeByteReg( BQ25703Aaddr, chargerOption0reg2, chargerOption02 );
+  // write2ByteReg( BQ25703Aaddr, chargerOption0reg2, chargerOption01, chargerOption02 );
 }
 
 void Lorro_BQ25703A::setChargerOption1(){
   // byte chargerOption11 = 0x9C;
-  byte chargerOption11 = 0x92;
-  writeByteReg( BQ25703Aaddr, chargerOption1reg1, chargerOption11 );
+  // byte chargerOption11 = 0x92;
+  // writeByteReg( BQ25703Aaddr, chargerOption1reg1, chargerOption11 );
 }
 
-void Lorro_BQ25703A::setChargerCurrent( uint16_t chargeCurrentVal ){
+void Lorro_BQ25703A::setChargerCurrent(){
   // uint16_t chargeCurrentVal = 2060; //mA
-  uint8_t valInmA = ( chargeCurrentVal / 64 );// / 10; // divide by 10 because sense resistors are out by 10
-  byte chargeCurrentByte2 = valInmA >> 2;
-  byte chargeCurrentByte1 = valInmA << 6;
-  write2ByteReg( BQ25703Aaddr, chargeCurrentreg2, chargeCurrentByte1, chargeCurrentByte2 );
+  // uint8_t valInmA = ( chargeCurrentVal / 64 );// / 10; // divide by 10 because sense resistors are out by 10
+  // byte chargeCurrentByte2 = valInmA >> 2;
+  // byte chargeCurrentByte1 = valInmA << 6;
+  // write2ByteReg( BQ25703Aaddr, chargeCurrentreg2, chargeCurrentByte1, chargeCurrentByte2 );
 }
 
 void Lorro_BQ25703A::setContADC(){
-  byte contADC = 0xE0;
-  writeByteReg( BQ25703Aaddr, ADCOptions, contADC );
+  // byte contADC = 0xE0;
+  // writeByteReg( BQ25703Aaddr, ADCOptions, contADC );
 }
 
 void Lorro_BQ25703A::setADCEns(){
-  byte EnAll = 0xFF;
-  // byte contADC = 0xE0;
-  writeByteReg( BQ25703Aaddr, ADCEns, EnAll );
+  // byte EnAll = 0xFF;
+  // // byte contADC = 0xE0;
+  // writeByteReg( BQ25703Aaddr, ADCEns, EnAll );
   // write2ByteReg( BQ25703Aaddr, ADCEns, contADC, EnAll );
 }
 
 void Lorro_BQ25703A::setSysVoltage(){
-  byte highVoltage = 0x3a;
-  writeByteReg( BQ25703Aaddr, SysVolt, highVoltage );
+  // byte highVoltage = 0x3a;
+  // writeByteReg( BQ25703Aaddr, SysVolt, highVoltage );
 }
 
 

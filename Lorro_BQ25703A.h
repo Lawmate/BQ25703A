@@ -39,7 +39,7 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 
 class Lorro_BQ25703A{
  public:
-	Lorro_BQ25703A( const char addr );
+	Lorro_BQ25703A();
 	void getVBUS();
  	void getVSYS();
 	float getVBAT();
@@ -55,11 +55,11 @@ class Lorro_BQ25703A{
 	void getChargerStatus();
 	void getChargeCurrent();
 	void getMaxChargeVoltage();
-	void setMaxChargeVoltage( uint16_t );
+	void setMaxChargeVoltage();
   void getChargerOption0();
 	void setChargerOption0();
 	void setChargerOption1();
-	void setChargerCurrent( uint16_t chargeCurrentVal );
+	void setChargerCurrent();
 	void setContADC();
 	void setADCEns();
 	void setSysVoltage();
@@ -400,7 +400,7 @@ class Lorro_BQ25703A{
         }
       } iIN_DPM;
       struct ADCVBUSPSYSt{ //read only
-        uint16_t sysPower = 0;
+        float sysPower = 0;
         uint16_t VBUS = 0;
         uint32_t Rsys = 30000; //Value of resistor on PSYS pin
         byte val0 = 0x00;
@@ -419,13 +419,13 @@ class Lorro_BQ25703A{
         uint16_t get_sysPower(){
           readReg( this, 2 );
           //multiply by the 12mV resolution
-          sysPower = val0 * 12;
+          sysPower = ( float )( val0 * 12 );
           //create temp large var and multiply by 1000 (uA/W)
-          uint32_t tempPower = sysPower * 1000;
+          double tempPower = ( sysPower * 1000 );
           //Divide by the resistor value Rsys
           tempPower = tempPower / Rsys;
           //convert back to smaller variable
-          sysPower = ( uint16_t )tempPower;
+          sysPower = ( float )tempPower;
           return sysPower;
         }
       } aDCVBUSPSYS;
@@ -441,7 +441,7 @@ class Lorro_BQ25703A{
           return ICHG;
         }
         //IDCHG discharging current value
-        uint16_t get_IDHG(){
+        uint16_t get_IDCHG(){
           //multiply up to mA value
           IDCHG = val0 * 256;
           return IDCHG;
