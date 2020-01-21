@@ -1,10 +1,10 @@
-# Lorro_BQ4050
+# Lorro_BQ25703A
 
 A library for interfacing with Texas Instruments BQ25703A battery charger chip.
 This chip has a comprehensive set of capabilities and many settings required
 to use it properly, so reading through the data sheet is a must.
 You will need to refer to the TI data sheet to get a description of all the different
-registers http://www.ti.com/lit/gpn/bq25703a
+registers http://www.ti.com/lit/ds/symlink/bq25703a.pdf
 This library enables easy reading and writing of the registers. The data is
 organised into a data structure similar to that outlined in the TRM and for each
 entry includes the value, address and data type.

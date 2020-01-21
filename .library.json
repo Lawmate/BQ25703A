@@ -4,7 +4,7 @@
     "keywords": [
         "communication"
     ],
-    "description": "Arduino library for BQ25703A battery fuel gauge, using SMBUS communication which is based on I2C",
+    "description": "Arduino library for BQ25703A battery charger, using I2C communication",
     "frameworks": [
         "arduino"
     ],
