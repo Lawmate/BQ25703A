@@ -15,7 +15,7 @@
 
 //Default address for device. Note, it is without read/write bit. When read with analyser,
 //this will appear 1 bit shifted to the left
-#define BQ25703ADevaddr     0xD6
+#define BQ25703ADevaddr    0xD6
 
 //Initialise the device and library
 Lorro_BQ25703A BQ25703A;

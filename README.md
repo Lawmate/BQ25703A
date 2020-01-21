@@ -9,6 +9,7 @@ This library enables easy reading and writing of the registers. The data is
 organised into a data structure similar to that outlined in the TRM and for each
 entry includes the value, address and data type.
 
+
 <!-- START COMPATIBILITY TABLE -->
 
 ## Compatibility
