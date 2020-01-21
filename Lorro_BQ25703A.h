@@ -40,29 +40,7 @@ Library for basic interfacing with BQ25703A battery management IC from TI
 class Lorro_BQ25703A{
  public:
 	Lorro_BQ25703A();
-	void getVBUS();
- 	void getVSYS();
-	float getVBAT();
-	float getICHG();
-	float getIDCHG();
-	float getIIN();
-	float getCMPIN();
-	void getManuID();
-	void getDevID();
-	void getADCOptions();
-	void getADCEns();
-	void getSysVoltage();
-	void getChargerStatus();
-	void getChargeCurrent();
-	void getMaxChargeVoltage();
-	void setMaxChargeVoltage();
-  void getChargerOption0();
-	void setChargerOption0();
-	void setChargerOption1();
-	void setChargerCurrent();
-	void setContADC();
-	void setADCEns();
-	void setSysVoltage();
+  //Initialise the variable here, but it will be written from the main program
   static const byte BQ25703Aaddr;
 
   template<typename T>
@@ -572,15 +550,7 @@ class Lorro_BQ25703A{
     } ;
 
  private:
-	byte readByteReg( char devAddress, byte regAddress );
-	byte readDFByteReg( char devAddress, byte regAddress1, byte regAddress2 );
-	byte readDFByteReg2( char devAddress, byte regAddress1, byte regAddress2 );
-	uint16_t read2ByteReg( char devAddress, byte regAddress );
-	uint16_t readBlockReg( char devAddress, byte regAddress, byte *block );
-	void writeByteReg( byte devAddress, byte regAddress, byte dataByte );
-	void write2ByteReg( byte devAddress, byte regAddress, byte dataByte1, byte dataByte2 );
   static boolean readDataReg( const byte regAddress, byte *dataVal, const uint8_t arrLen );
-  // static boolean writeDataReg( const byte regAddress, byte *dataVal );
   static boolean writeDataReg( const byte regAddress, byte dataVal0, byte dataVal1 );
 
 };
