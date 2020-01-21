@@ -26,14 +26,7 @@
     "homepage": null,
     "export": {
         "include": null,
-        "exclude": [
-            "extras",
-            "docs",
-            "tests",
-            "test",
-            "*.doxyfile",
-            "*.pdf"
-        ]
+        "exclude": null,
     },
     "id": 199
 }
