@@ -54,7 +54,26 @@ class Lorro_BQ25703A{
     if( readDataReg( dataParam->addr, valBytes, arrLen ) ){
       //Cycle through array of data
       dataParam->val0 = valBytes[ 0 ];
-      if( arrLen > 2 ) dataParam->val1 = valBytes[ 1 ];
+      if( arrLen >= 2 ) dataParam->val1 = valBytes[ 1 ];
+      return true;
+    }else{
+      return false;
+    }
+
+  }
+  template<typename T>
+  boolean readRegEx( T& dataParam ){
+    //This is a function for reading data words.
+    //The number of bytes that make up a word is 2.
+    constexpr uint8_t arrLen = 2;
+    //Create an array to hold the returned data
+    byte valBytes[ arrLen ];
+
+    if( readDataReg( dataParam.addr, valBytes, arrLen ) ){
+
+      // Cycle through array of data
+      dataParam.val0 = ( byte )valBytes[ 0 ];
+      dataParam.val1 = ( byte )valBytes[ 1 ];
       return true;
     }else{
       return false;
@@ -387,12 +406,15 @@ class Lorro_BQ25703A{
         //VBUS voltage and system power. VBUS is direct reading.
         //System power(W) is Vsys(mV)/Rsys(R) * 10^3
         uint16_t get_VBUS(){
-          readReg( this, 2 );
-          //multiply up to mV value
-          VBUS = val1 * 64;
-          //Add in offset
-          VBUS = VBUS + 3200;
-          return VBUS;
+          if( readReg( this, 2 ) ){
+            //multiply up to mV value
+            VBUS = val1 * 64;
+            //Add in offset
+            VBUS = VBUS + 3200;
+            return VBUS;
+          }else{
+            return 0;
+          }
         }
         uint16_t get_sysPower(){
           readReg( this, 2 );
@@ -549,8 +571,9 @@ class Lorro_BQ25703A{
       } deviceID;
     } ;
 
- private:
+ // private:
   static boolean readDataReg( const byte regAddress, byte *dataVal, const uint8_t arrLen );
   static boolean writeDataReg( const byte regAddress, byte dataVal0, byte dataVal1 );
+  boolean read2ByteReg( byte regAddress, byte *val0, byte *val1 );
 
 };

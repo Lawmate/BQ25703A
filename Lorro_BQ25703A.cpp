@@ -60,3 +60,20 @@ static boolean Lorro_BQ25703A::writeDataReg( const byte regAddress, byte dataVal
   }
 
 }
+
+// boolean Lorro_BQ25703A::read2ByteReg( byte regAddress, byte *val0, byte *val1 ){
+//
+//   Wire.beginTransmission( BQ25703Aaddr );
+//   Wire.write( regAddress );
+//   byte ack = Wire.endTransmission();
+//   if( ack == 0 ){
+//     Wire.requestFrom( ( int )BQ25703Aaddr , 2 );
+//     if( Wire.available() > 0 ){
+//       val0 = Wire.receive();
+//       val0 = Wire.receive();
+//     }
+//     return true;
+//   }else{
+//     return false; //if I2C comm fails
+//   }
+// }
