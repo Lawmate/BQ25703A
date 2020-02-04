@@ -132,8 +132,8 @@ class Lorro_BQ25703A{
   struct Regt{
       struct ChargeOption0t{
         uint8_t addr = 0x00;
-        byte val0 = 0x1A;
-        byte val1 = 0x34;
+        byte val0 = 0x0E;
+        byte val1 = 0x82;
         //Learn mode. Discharges with power connected. Default disabled
         FIELD( val0, EN_LEARN, 0x05, 0x01 )
         //Current shunt amplifier 20x or 40x. Default is 20x
@@ -149,7 +149,7 @@ class Lorro_BQ25703A{
         //Enable low power mode. Default is enabled
         FIELD( val1, EN_LWPWR, 0x07, 0x01 )
         //Watchdog timer. Default is 175sec between commands (0x03)
-        FIELD( val1, WDTMR_ADJ, 0x06, 0x02 )
+        FIELD( val1, WDTMR_ADJ, 0x05, 0x02 )
         //Disable IDPM. Default is low (IDPM enabled)
         FIELD( val1, IDPM_AUTO_DISABLE, 0x04, 0x01 )
         //Turn Chrgok on if OTG is enabled. Default is low
@@ -183,14 +183,14 @@ class Lorro_BQ25703A{
       } maxChargeVoltage;
       struct ChargeOption1t{
         uint8_t addr = 0x30;
-        byte val0 = 0x81;
-        byte val1 = 0x11;
+        byte val0 = 0x11;
+        byte val1 = 0x02;
         //Internal comparator reference 2.3V or 1.2V. Default is 2.3V
         FIELD( val0, CMP_REF, 0x07, 0x01 )
         //Internal comparator polarity
         FIELD( val0, CMP_POL, 0x06, 0x01 )
         //Internal comparator deglitch time; off, 1us, 2ms, 5s. Default is 1us
-        FIELD( val0, CMP_DEG, 0x05, 0x02 )
+        FIELD( val0, CMP_DEG, 0x04, 0x02 )
         //Force power path to switch off. Default is disabled
         FIELD( val0, FORCE_LATCHOFF, 0x03, 0x01 )
         //Discharge SRN pin for shipping. Default is disabled
@@ -200,7 +200,7 @@ class Lorro_BQ25703A{
         //Enable IBAT output buffer. Default is disabled
         FIELD( val1, EN_IBAT, 0x07, 0x01 )
         //PROCHOT during battery only; disabled, IDCHG, VSYS. Default is disabled
-        FIELD( val1, EN_PROCHOT_LPWR, 0x06, 0x02 )
+        FIELD( val1, EN_PROCHOT_LPWR, 0x05, 0x02 )
         //Enable PSYS buffer. Default is disabled
         FIELD( val1, EN_PSYS, 0x04, 0x01 )
         //Charge sense resistor; 10mR or 20mR. Default is 10mR
@@ -231,7 +231,7 @@ class Lorro_BQ25703A{
         //OCP related to PROCHOT IDCHG; 125% or 200%. Default is 200%
         FIELD( val0, BATOC_VTH, 0x00, 0x01 )
         //Input overload time; 1ms, 2mS, 10mS, 20mS. Default is 1mS
-        FIELD( val1, PKPWR_TOVLD_DEG, 0x07, 0x02 )
+        FIELD( val1, PKPWR_TOVLD_DEG, 0x06, 0x02 )
         //Enable peak power mode from over current. Default is disabled
         FIELD( val1, EN_PKPWR_IDPM, 0x05, 0x01 )
         //Enable peak power mode from under voltage. Default is disabled
@@ -241,7 +241,7 @@ class Lorro_BQ25703A{
         //Indicator that device is in relaxation cycle. Default disabled
         FIELD( val1, PKPWR_RELAX_STAT, 0x02, 0x01 )
         //Peak power mode overload and relax cycle times; 5mS, 10mS, 20mS, 40mS. Default is 20mS
-        FIELD( val1, PKPWR_TMAX, 0x01, 0x02 )
+        FIELD( val1, PKPWR_TMAX, 0x00, 0x02 )
       } chargeOption2;
       struct ChargeOption3t{
         uint8_t addr = 0x34;
@@ -267,19 +267,19 @@ class Lorro_BQ25703A{
         byte val0 = 0x50;
         byte val1 = 0x92;
         //VSYS threshold; 5.75V, 6V, 6.25V, 6.5V. Default is 6V
-        FIELD( val0, VSYS_VTH, 0x07, 0x02 )
+        FIELD( val0, VSYS_VTH, 0x06, 0x02 )
         //Enable PROCHOT voltage kept LOW until PROCHOT_CLEAR is written. Default is disabled
         FIELD( val0, EN_PROCHOT_EX, 0x05, 0x01 )
         //Minimum PROCHOT pulse length when EN_PROCHOT_EX is disabled; 100us, 1ms, 10ms, 5ms. Default is 1ms
-        FIELD( val0, PROCHOT_WIDTH, 0x04, 0x02 )
+        FIELD( val0, PROCHOT_WIDTH, 0x03, 0x02 )
         //Clears PROCHOT pulse when EN_PROCHOT_EX is enabled. Default is idle.
         FIELD( val0, PROCHOT_CLEAR, 0x02, 0x01 )
         //INOM deglitch time; 1ms or 50ms. Default is 1ms
         FIELD( val0, INOM_DEG, 0x01, 0x01 )
         //ILIM2 threshold as percentage of IDPM; 110%-230%(5% step), 250%-450%(50% step). Default is 150%
-        FIELD( val1, ILIM2_VTH, 0x07, 0x05 )
+        FIELD( val1, ILIM2_VTH, 0x03, 0x05 )
         //ICRIT deglitch time. ICRIT is 110% of ILIM2; 15us, 100us, 400us, 800us. Default is 100us.
-        FIELD( val1, ICRIT_DEG, 0x02, 0x02 )
+        FIELD( val1, ICRIT_DEG, 0x01, 0x02 )
       } prochotOption0;
       struct ProchotOption1t{
           uint8_t addr = 0x38;
@@ -300,13 +300,14 @@ class Lorro_BQ25703A{
           //PROCHOT will be triggered if the adapter is removed. Default is disabled.
           FIELD( val0, PROCHOT_PROFILE_ACOK, 0x00, 0x01 )
           //IDCHG threshold. PROCHOT is triggered when IDCHG is above; 0-32356mA in 512mA steps. Default is 16384mA
-          FIELD( val1, IDCHG_VTH, 0x07, 0x06 )
+          FIELD( val1, IDCHG_VTH, 0x02, 0x06 )
           //IDCHG deglitch time; 1.6ms, 100us, 6ms, 12ms. Default is 100us.
-          FIELD( val1, IDCHG_DEG, 0x01, 0x02 )
+          FIELD( val1, IDCHG_DEG, 0x00, 0x02 )
       } prochotOption1;
       struct ADCOptiont{
         uint8_t addr = 0x3A;
-        byte val0, val1;
+        byte val0 = 0x00;
+        byte val1 = 0x20;
         //Enable comparator voltage reading. Default is disabled.
         FIELD( val0, EN_ADC_CMPIN, 0x07, 0x01 )
         //Enable VBUS voltage reading. Default is disabled.
