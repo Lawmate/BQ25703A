@@ -160,7 +160,7 @@ class Lorro_BQ25703A{
         FIELD( val1, PWM_FREQ, 0x01, 0x01 )
       } chargeOption0;
       struct ChargeCurrentt{
-        uint16_t current = 2048;
+        uint16_t current = 1500;
         byte val0 = 0x00;
         byte val1 = 0x08;
         uint8_t addr = 0x02;
