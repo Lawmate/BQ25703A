@@ -417,7 +417,7 @@ class Lorro_BQ25703A{
             return 0;
           }
         }
-        uint16_t get_sysPower(){
+        float get_sysPower(){
           readReg( this, 2 );
           //multiply by the 12mV resolution
           sysPower = ( float )( val0 * 12 );
