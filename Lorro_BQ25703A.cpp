@@ -37,7 +37,7 @@ boolean Lorro_BQ25703A::readDataReg( const byte regAddress, byte *dataVal, const
     Wire.requestFrom( ( int )BQ25703Aaddr , ( int )( arrLen + 1 ) );
     if( Wire.available() > 0 ){
       for( uint8_t i = 0; i < arrLen; i++ ){
-        dataVal[ i ] = Wire.receive();
+        dataVal[ i ] = Wire.read();
       }
     }
     return true;
