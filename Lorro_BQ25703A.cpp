@@ -28,7 +28,7 @@ Lorro_BQ25703A::Lorro_BQ25703A(){
 //I2C functions below here
 //------------------------------------------------------------------------
 
-static boolean Lorro_BQ25703A::readDataReg( const byte regAddress, byte *dataVal, const uint8_t arrLen ){
+boolean Lorro_BQ25703A::readDataReg( const byte regAddress, byte *dataVal, const uint8_t arrLen ){
 
   Wire.beginTransmission( BQ25703Aaddr );
   Wire.write( regAddress );
@@ -37,7 +37,7 @@ static boolean Lorro_BQ25703A::readDataReg( const byte regAddress, byte *dataVal
     Wire.requestFrom( ( int )BQ25703Aaddr , ( int )( arrLen + 1 ) );
     if( Wire.available() > 0 ){
       for( uint8_t i = 0; i < arrLen; i++ ){
-        dataVal[ i ] = Wire.receive();
+        dataVal[ i ] = Wire.read();
       }
     }
     return true;
@@ -46,7 +46,7 @@ static boolean Lorro_BQ25703A::readDataReg( const byte regAddress, byte *dataVal
   }
 }
 
-static boolean Lorro_BQ25703A::writeDataReg( const byte regAddress, byte dataVal0, byte dataVal1 ){
+boolean Lorro_BQ25703A::writeDataReg( const byte regAddress, byte dataVal0, byte dataVal1 ){
 
   Wire.beginTransmission( BQ25703Aaddr );
   Wire.write( regAddress );
